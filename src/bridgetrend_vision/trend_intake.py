@@ -536,7 +536,8 @@ def _required_text(value: object, field: str) -> str:
 
 
 def _format_number(value: float) -> str:
-    return str(int(value)) if value.is_integer() else format(value, ".12g")
+    numeric = float(value)
+    return str(int(numeric)) if numeric.is_integer() else format(numeric, ".12g")
 
 
 def _observation_id(*parts: str) -> str:
