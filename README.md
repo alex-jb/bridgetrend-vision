@@ -2,7 +2,7 @@
 
 Cross-market product discovery using multimodal computer vision.
 
-BridgeTrend Vision is the COM 6005 Computer Vision component of the broader BridgeTrend project. The first research milestone is a reproducible baseline that embeds product images with OpenCLIP and retrieves visually related items from another market.
+BridgeTrend Vision is the COM 6005 Computer Vision component of the broader BridgeTrend project. The research goal is to build and evaluate a reproducible system that embeds product images, retrieves related products across U.S. and Chinese markets, and identifies shared visual product clusters.
 
 ## Research question
 
@@ -16,41 +16,61 @@ Can pretrained visual representations identify exact products, close substitutes
 - L0-L3 relevance labels
 - Recall@K, mAP, and nDCG evaluation
 - Category-aware reranking and CLIP/DINOv2 fusion in later milestones
+- A 48-category main-study taxonomy
 
 The project does **not** claim to predict sales from images alone. Trend claims require market, timestamp, and future interaction or sales evidence.
 
+## Experiment scale
+
+The pipeline is developed in stages so that data problems are found before expensive experiments:
+
+| Stage | Purpose | Planned scale |
+|---|---|---|
+| Pipeline check | Confirm manifest, image loading, and output files | 20-50 images |
+| Pilot baseline | Compare cross-market retrieval behavior | 300-600 images, 5 categories |
+| Main study | Report reliable overall and per-category metrics | 40+ categories, thousands of images |
+| Research extension | Add time-aware clustering and trend evidence | Depends on timestamp and interaction data |
+
+The five pilot categories are t_shirt, sneakers, handbag, headphones, and lamp. They cover different visual structures and are not the final research limit. See [configs/taxonomy.yaml](configs/taxonomy.yaml).
+
 ## Quick start
 
-```bash
+~~~bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e ".[dev]"
+
+cp data/metadata.example.csv data/metadata.csv
+python scripts/validate_manifest.py --manifest data/metadata.csv
 
 python scripts/run_baseline.py \
   --manifest data/metadata.csv \
   --output-dir results/baseline \
-  --top-k 5
-```
+  --top-k 5 \
+  --same-category-only
+~~~
 
-The manifest must contain these columns:
+Before running the baseline, replace the example rows with real, legally usable image paths. Add --check-files to the validation command to verify that every image is present.
 
-```text
+The manifest columns are:
+
+~~~text
 image_id,image_path,market,category,product_id,title,source,timestamp
-```
+~~~
 
-See [`data/README.md`](data/README.md) for the data contract.
+See [data/README.md](data/README.md) for the full data contract.
 
 ## Repository structure
 
-```text
+~~~text
 bridgetrend-vision/
-├── configs/                 # Reproducible experiment settings
-├── data/                    # Local data; images are not committed
-├── scripts/                 # Runnable experiment entry points
+├── configs/                 # Experiment settings and category taxonomy
+├── data/                    # Local metadata; images are not committed
+├── scripts/                 # Validation and experiment entry points
 ├── src/bridgetrend_vision/  # Reusable Python package
 ├── tests/                   # Fast unit tests
 └── results/                 # Generated outputs; not committed
-```
+~~~
 
 ## Team
 
@@ -68,5 +88,4 @@ All members share labeling, experiment review, documentation, and presentation w
 
 ## Status
 
-Milestone 1: repository setup and OpenCLIP cross-market retrieval baseline.
-
+Milestone 1 is active: prepare the first paired U.S./China image manifest and run the OpenCLIP retrieval baseline.
