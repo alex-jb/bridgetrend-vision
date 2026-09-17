@@ -152,7 +152,7 @@ sources:
     visual_storage: none
     independence_group: google_trends
     claim_eligible: false
-    blocker: Web CSV export is not frozen; the official API remains limited alpha access.
+    blocker: A 105-row rendered-table extraction exists for BT-C001/US, but the untouched official CSV is not frozen and the official API remains limited alpha access.
     official_url: https://developers.google.com/search/blog/2025/07/trends-api
 
   ebay_browse_api_us:
