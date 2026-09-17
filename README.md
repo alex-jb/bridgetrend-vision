@@ -14,6 +14,7 @@ retrieve more evidence, request human review, or reject it.
 - [Competition execution plan](docs/opencv_competition_plan.md)
 - [Devpost draft](docs/devpost_draft.md)
 - [Agent policy](configs/agent_policy.yaml)
+- [Closed-loop evidence-session protocol](docs/evidence_session_protocol.md)
 
 Run a deterministic decision trace without downloading a model:
 
@@ -28,6 +29,19 @@ python scripts/run_evidence_agent.py \
 
 The existing course baseline and the competition-period additions are disclosed
 separately so prior work and individual competition work remain attributable.
+
+Run a replayable perceive-decide-act-verify session:
+
+~~~bash
+python scripts/run_evidence_session.py \
+  --scenario data/evidence_session.example.json \
+  --output results/evidence_sessions/plush-bag-charm-demo-001.json
+~~~
+
+The session starts with insufficient independent evidence, calls a bounded
+evidence-acquisition tool, re-evaluates the changed visual state, and emits a
+SHA-256-linked decision trace. If the acquisition budget or provider is
+exhausted, it escalates to human review instead of silently accepting a match.
 
 Install the OpenCV 5 competition extra and inspect one image:
 

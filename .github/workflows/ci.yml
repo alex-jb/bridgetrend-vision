@@ -27,3 +27,10 @@ jobs:
           --quality-score 0.82
           --evidence-count 3
           --source-diversity 2
+      - name: Smoke test closed-loop evidence session
+        env:
+          PYTHONPATH: src
+        run: >-
+          python scripts/run_evidence_session.py
+          --scenario data/evidence_session.example.json
+          --output results/evidence_sessions/ci-smoke.json

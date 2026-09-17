@@ -19,4 +19,4 @@ checkpoints/
 *.ckpt
 *.npy
 *.npz
-
+*.egg-info/
