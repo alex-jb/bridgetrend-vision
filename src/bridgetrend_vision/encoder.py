@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 
@@ -54,4 +54,3 @@ class OpenCLIPEncoder:
             features = self.model.encode_text(tokens)
             features = features / features.norm(dim=-1, keepdim=True)
         return features.cpu().numpy().astype(np.float32)
-

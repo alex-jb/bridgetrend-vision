@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 REQUIRED_COLUMNS = {
     "image_id",
     "image_path",

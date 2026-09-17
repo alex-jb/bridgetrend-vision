@@ -5,7 +5,6 @@ import pytest
 
 from bridgetrend_vision.manifest import load_manifest
 
-
 COLUMNS = [
     "image_id",
     "image_path",
