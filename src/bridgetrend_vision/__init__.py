@@ -56,4 +56,4 @@ __all__ = [
     "score_retrieval_candidates",
     "verify_trace_chain",
 ]
-__version__ = "0.5.0"
+__version__ = "0.6.0"

@@ -1,3 +1,4 @@
+import hashlib
 from pathlib import Path
 
 import pandas as pd
@@ -26,6 +27,10 @@ PILOT_COLUMNS = COLUMNS + [
     "sha256",
     "split",
     "query_eligible",
+    "evaluation_track",
+    "market_label_basis",
+    "source_creator",
+    "attribution_text",
 ]
 
 
@@ -44,11 +49,14 @@ def pilot_row(
     family_id: str = "family1",
     split: str = "validation",
     commercial: str = "false",
+    market: str = "GLOBAL",
+    evaluation_track: str = "retrieval_calibration",
+    market_label_basis: str = "not_applicable",
 ) -> list[str]:
     return [
         image_id,
         f"raw/{image_id}.jpg",
-        "US",
+        market,
         "sneakers",
         product_id,
         "shoe",
@@ -61,9 +69,13 @@ def pilot_row(
         "research_only",
         "false",
         commercial,
-        "a" * 64,
+        hashlib.sha256(image_id.encode("utf-8")).hexdigest(),
         split,
         "true",
+        evaluation_track,
+        market_label_basis,
+        "Google Research",
+        "Google Research, Google Scanned Objects, CC BY 4.0",
     ]
 
 
@@ -151,3 +163,44 @@ def test_load_pilot_manifest_rejects_an_empty_template(tmp_path: Path):
 
     with pytest.raises(ValueError, match="at least one image row"):
         load_pilot_manifest(manifest)
+
+
+def test_load_pilot_manifest_separates_calibration_from_market_evidence(
+    tmp_path: Path,
+):
+    manifest = tmp_path / "pilot.csv"
+    write_pilot_manifest(
+        manifest,
+        [
+            pilot_row(
+                market="US",
+                evaluation_track="cross_market",
+                market_label_basis="owned_capture",
+            )
+        ],
+    )
+
+    frame = load_pilot_manifest(manifest)
+
+    assert frame.loc[0, "evaluation_track"] == "cross_market"
+
+
+def test_load_pilot_manifest_blocks_fake_market_label_on_calibration_asset(
+    tmp_path: Path,
+):
+    manifest = tmp_path / "pilot.csv"
+    write_pilot_manifest(manifest, [pilot_row(market="US")])
+
+    with pytest.raises(ValueError, match="must use market GLOBAL"):
+        load_pilot_manifest(manifest)
+
+
+def test_load_pilot_manifest_verifies_hash_against_local_bytes(tmp_path: Path):
+    image_path = tmp_path / "raw/img1.jpg"
+    image_path.parent.mkdir()
+    image_path.write_bytes(b"not-the-declared-image")
+    manifest = tmp_path / "pilot.csv"
+    write_pilot_manifest(manifest, [pilot_row()])
+
+    with pytest.raises(ValueError, match="does not match local image bytes"):
+        load_pilot_manifest(manifest, check_files=True)

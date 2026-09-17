@@ -1,0 +1,79 @@
+version: 1
+description: >-
+  BridgeTrend maximum-use policy for dataset and acquisition sources. This is
+  an engineering gate, not legal advice; every external asset still needs its
+  exact source and license URLs recorded in the manifest.
+
+sources:
+  bridgetrend_owned:
+    status: allowed
+    allowed_tracks: [retrieval_calibration, cross_market]
+    allowed_rights_scopes: [owned]
+    allowed_license_ids: [BRIDGETREND-OWNED]
+    market_label_bases: [not_applicable, owned_capture]
+    commercial_use_allowed: true
+    redistribution_allowed: true
+
+  written_permission:
+    status: allowed
+    allowed_tracks: [retrieval_calibration, cross_market]
+    allowed_rights_scopes: [permission_granted]
+    allowed_license_ids: [WRITTEN-PERMISSION]
+    market_label_bases: [not_applicable, written_permission]
+    commercial_use_allowed: true
+    redistribution_allowed: true
+
+  google_scanned_objects:
+    status: allowed
+    allowed_tracks: [retrieval_calibration]
+    allowed_rights_scopes: [commercial_ok]
+    allowed_license_ids: [CC-BY-4.0]
+    market_label_bases: [not_applicable]
+    commercial_use_allowed: true
+    redistribution_allowed: true
+
+  openverse_per_asset:
+    status: allowed
+    allowed_tracks: [retrieval_calibration]
+    allowed_rights_scopes: [commercial_ok]
+    allowed_license_ids: [CC0-1.0, CC-BY-4.0, CC-BY-SA-4.0, PDM-1.0]
+    market_label_bases: [not_applicable]
+    commercial_use_allowed: true
+    redistribution_allowed: true
+    per_asset_license: true
+
+  products_10k:
+    status: allowed
+    allowed_tracks: [retrieval_calibration]
+    allowed_rights_scopes: [research_only]
+    allowed_license_ids: [PRODUCTS10K-RESEARCH-ONLY]
+    market_label_bases: [not_applicable]
+    commercial_use_allowed: false
+    redistribution_allowed: false
+
+  approved_platform_api:
+    status: review_required
+    allowed_tracks: [cross_market]
+    allowed_rights_scopes: [permission_granted]
+    allowed_license_ids: [PLATFORM-AGREEMENT]
+    market_label_bases: [approved_platform_api]
+    commercial_use_allowed: false
+    redistribution_allowed: false
+
+  amazon_berkeley_objects:
+    status: blocked
+    allowed_tracks: [retrieval_calibration]
+    allowed_rights_scopes: [research_only]
+    allowed_license_ids: [LICENSE-CONFLICT]
+    market_label_bases: [not_applicable]
+    commercial_use_allowed: false
+    redistribution_allowed: false
+
+  product1m:
+    status: blocked
+    allowed_tracks: [retrieval_calibration]
+    allowed_rights_scopes: [research_only]
+    allowed_license_ids: [LICENSE-NOT-VERIFIED]
+    market_label_bases: [not_applicable]
+    commercial_use_allowed: false
+    redistribution_allowed: false

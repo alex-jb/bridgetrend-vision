@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import re
 from pathlib import Path
 from typing import Literal
@@ -18,7 +19,7 @@ REQUIRED_COLUMNS = {
     "source",
     "timestamp",
 }
-SUPPORTED_MARKETS = {"US", "CN"}
+SUPPORTED_MARKETS = {"US", "CN", "GLOBAL"}
 PILOT_REQUIRED_COLUMNS = REQUIRED_COLUMNS | {
     "product_family_id",
     "source_url",
@@ -30,6 +31,10 @@ PILOT_REQUIRED_COLUMNS = REQUIRED_COLUMNS | {
     "sha256",
     "split",
     "query_eligible",
+    "evaluation_track",
+    "market_label_basis",
+    "source_creator",
+    "attribution_text",
 }
 SUPPORTED_RIGHTS_SCOPES = {
     "commercial_ok",
@@ -38,6 +43,13 @@ SUPPORTED_RIGHTS_SCOPES = {
     "research_only",
 }
 SUPPORTED_SPLITS = {"train", "validation", "test"}
+SUPPORTED_EVALUATION_TRACKS = {"retrieval_calibration", "cross_market"}
+SUPPORTED_MARKET_LABEL_BASES = {
+    "not_applicable",
+    "owned_capture",
+    "approved_platform_api",
+    "written_permission",
+}
 _TRUE_VALUES = {"1", "true", "yes", "y"}
 _FALSE_VALUES = {"0", "false", "no", "n"}
 _SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -69,7 +81,7 @@ def load_manifest(path: str | Path, *, check_files: bool = False) -> pd.DataFram
         raise ValueError(
             "unsupported market values: "
             + ", ".join(unsupported)
-            + "; expected US or CN"
+            + "; expected US, CN, or GLOBAL"
         )
 
     frame["category"] = frame["category"].str.strip()
@@ -101,6 +113,7 @@ def load_pilot_manifest(
     check_files: bool = False,
     intended_use: Literal["research", "commercial"] = "research",
     require_redistributable: bool = False,
+    source_registry: str | Path | None = None,
 ) -> pd.DataFrame:
     """Load a provenance-complete pilot manifest and enforce rights gates.
 
@@ -131,6 +144,10 @@ def load_pilot_manifest(
         "sha256",
         "split",
         "timestamp",
+        "evaluation_track",
+        "market_label_basis",
+        "source_creator",
+        "attribution_text",
     )
     for column in nonempty_columns:
         if (frame[column].str.strip() == "").any():
@@ -147,6 +164,51 @@ def load_pilot_manifest(
     unsupported_splits = sorted(set(frame["split"]) - SUPPORTED_SPLITS)
     if unsupported_splits:
         raise ValueError("unsupported split values: " + ", ".join(unsupported_splits))
+
+    frame["evaluation_track"] = (
+        frame["evaluation_track"].str.strip().str.lower()
+    )
+    unsupported_tracks = sorted(
+        set(frame["evaluation_track"]) - SUPPORTED_EVALUATION_TRACKS
+    )
+    if unsupported_tracks:
+        raise ValueError(
+            "unsupported evaluation_track values: " + ", ".join(unsupported_tracks)
+        )
+
+    frame["market_label_basis"] = (
+        frame["market_label_basis"].str.strip().str.lower()
+    )
+    unsupported_bases = sorted(
+        set(frame["market_label_basis"]) - SUPPORTED_MARKET_LABEL_BASES
+    )
+    if unsupported_bases:
+        raise ValueError(
+            "unsupported market_label_basis values: " + ", ".join(unsupported_bases)
+        )
+
+    calibration_rows = frame["evaluation_track"] == "retrieval_calibration"
+    if not (frame.loc[calibration_rows, "market"] == "GLOBAL").all():
+        raise ValueError(
+            "retrieval_calibration rows must use market GLOBAL; they do not prove "
+            "U.S. or Chinese market presence"
+        )
+    if not (
+        frame.loc[calibration_rows, "market_label_basis"] == "not_applicable"
+    ).all():
+        raise ValueError(
+            "retrieval_calibration rows must use market_label_basis not_applicable"
+        )
+
+    cross_market_rows = frame["evaluation_track"] == "cross_market"
+    if not frame.loc[cross_market_rows, "market"].isin({"US", "CN"}).all():
+        raise ValueError("cross_market rows must use market US or CN")
+    if (
+        frame.loc[cross_market_rows, "market_label_basis"] == "not_applicable"
+    ).any():
+        raise ValueError(
+            "cross_market rows require an auditable market_label_basis"
+        )
 
     for column in (
         "redistribution_allowed",
@@ -165,6 +227,25 @@ def load_pilot_manifest(
     if invalid_hashes:
         raise ValueError("sha256 values must be 64 lowercase hexadecimal characters")
     frame["sha256"] = frame["sha256"].str.strip().str.lower()
+    duplicate_hashes = frame.loc[
+        frame["sha256"].duplicated(keep=False), "sha256"
+    ].unique()
+    if len(duplicate_hashes):
+        raise ValueError(
+            "exact duplicate image hashes are not allowed in a pilot manifest: "
+            + ", ".join(sorted(duplicate_hashes)[:5])
+        )
+
+    if check_files:
+        mismatches: list[str] = []
+        for row in frame.itertuples(index=False):
+            digest = _sha256_file(Path(row.resolved_image_path))
+            if digest != row.sha256:
+                mismatches.append(str(row.image_id))
+        if mismatches:
+            preview = ", ".join(mismatches[:5])
+            suffix = "" if len(mismatches) <= 5 else f" (+{len(mismatches) - 5} more)"
+            raise ValueError(f"sha256 does not match local image bytes: {preview}{suffix}")
 
     try:
         pd.to_datetime(frame["timestamp"], utc=True, errors="raise")
@@ -186,6 +267,11 @@ def load_pilot_manifest(
     if require_redistributable and not frame["redistribution_allowed"].all():
         raise ValueError("manifest includes assets that cannot be redistributed")
 
+    if source_registry is not None:
+        from bridgetrend_vision.source_registry import validate_source_policies
+
+        validate_source_policies(frame, source_registry)
+
     return frame
 
 
@@ -196,3 +282,11 @@ def _parse_bool(value: str, column: str) -> bool:
     if normalized in _FALSE_VALUES:
         return False
     raise ValueError(f"{column} must contain true/false values")
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()

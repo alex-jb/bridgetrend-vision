@@ -8,6 +8,8 @@ from pathlib import Path
 
 from bridgetrend_vision.manifest import load_manifest, load_pilot_manifest
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -28,6 +30,12 @@ def parse_args() -> argparse.Namespace:
         default="research",
     )
     parser.add_argument("--require-redistributable", action="store_true")
+    parser.add_argument(
+        "--source-registry",
+        type=Path,
+        default=ROOT / "configs/source_registry.yaml",
+        help="source policy registry used by strict pilot validation",
+    )
     return parser.parse_args()
 
 
@@ -39,6 +47,7 @@ def main() -> None:
             check_files=args.check_files,
             intended_use=args.intended_use,
             require_redistributable=args.require_redistributable,
+            source_registry=args.source_registry,
         )
     else:
         frame = load_manifest(args.manifest, check_files=args.check_files)
@@ -51,6 +60,10 @@ def main() -> None:
         print(f"Query-eligible images: {int(frame['query_eligible'].sum())}")
         print(f"Product families: {frame['product_family_id'].nunique()}")
         print(f"Intended use gate: {args.intended_use}")
+        print(
+            "Evaluation tracks: "
+            + ", ".join(sorted(frame["evaluation_track"].unique()))
+        )
     print()
     print("Images by market:")
     print(frame.groupby("market").size().to_string())

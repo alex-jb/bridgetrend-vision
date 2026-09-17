@@ -10,8 +10,11 @@ import numpy as np
 import pandas as pd
 
 from bridgetrend_vision.encoder import OpenCLIPEncoder
-from bridgetrend_vision.manifest import load_manifest
+from bridgetrend_vision.manifest import load_manifest, load_pilot_manifest
 from bridgetrend_vision.retrieval import cosine_top_k
+from bridgetrend_vision.retrieval_protocol import iter_query_galleries
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def parse_args() -> argparse.Namespace:
@@ -23,6 +26,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument(
+        "--mode",
+        choices=("cross_market", "global_calibration"),
+        default="cross_market",
+    )
+    parser.add_argument(
+        "--pilot",
+        action="store_true",
+        help="enforce the strict rights/provenance manifest contract",
+    )
+    parser.add_argument(
+        "--source-registry",
+        type=Path,
+        default=ROOT / "configs/source_registry.yaml",
+    )
+    parser.add_argument(
         "--same-category-only",
         action="store_true",
         help="retrieve only from the same category in the other market",
@@ -32,7 +50,16 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    metadata = load_manifest(args.manifest, check_files=True)
+    if args.pilot:
+        metadata = load_pilot_manifest(
+            args.manifest,
+            check_files=True,
+            source_registry=args.source_registry,
+        )
+    else:
+        metadata = load_manifest(args.manifest, check_files=True)
+    if args.mode == "global_calibration" and not args.pilot:
+        raise ValueError("global_calibration mode requires --pilot")
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     encoder = OpenCLIPEncoder(model_name=args.model, pretrained=args.pretrained)
@@ -44,16 +71,12 @@ def main() -> None:
     )
 
     rows: list[dict[str, object]] = []
-    markets = metadata["market"].to_numpy()
-    categories = metadata["category"].to_numpy()
-    for query_index, query in metadata.iterrows():
-        gallery_mask = markets != query["market"]
-        if args.same_category_only:
-            gallery_mask &= categories == query["category"]
-        gallery_indices = np.flatnonzero(gallery_mask)
-        if gallery_indices.size == 0:
-            continue
-
+    for query_index, gallery_indices in iter_query_galleries(
+        metadata,
+        mode=args.mode,
+        same_category_only=args.same_category_only,
+    ):
+        query = metadata.iloc[query_index]
         scores, local_indices = cosine_top_k(
             embeddings[query_index : query_index + 1],
             embeddings[gallery_indices],
@@ -74,6 +97,14 @@ def main() -> None:
                     "cosine_similarity": float(score),
                     "query_category": query["category"],
                     "match_category": match["category"],
+                    "query_product_family_id": query.get(
+                        "product_family_id", query.get("product_id", "")
+                    ),
+                    "match_product_family_id": match.get(
+                        "product_family_id", match.get("product_id", "")
+                    ),
+                    "split": query.get("split", "unspecified"),
+                    "retrieval_mode": args.mode,
                 }
             )
 

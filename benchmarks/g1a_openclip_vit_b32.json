@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "g1a-gso-openclip-vit-b32-2026-09-17",
+  "claim_scope": "market-neutral multi-view instance retrieval calibration",
+  "cross_market_claim_allowed": false,
+  "dataset": {
+    "source": "Google Scanned Objects",
+    "dataset_digest": "2cbfd040db64bc7ac3eb8ba7580b7dc334dc312e418eb7e1e445970fc21d7a50",
+    "images": 150,
+    "product_families": 30,
+    "categories": 10,
+    "queries": 30,
+    "positive_views_per_query": 4,
+    "validation_images": 100,
+    "test_images": 50
+  },
+  "model": {
+    "library": "open_clip_torch",
+    "library_version": "3.3.0",
+    "model_name": "ViT-B-32",
+    "pretrained": "laion2b_s34b_b79k",
+    "model_id": "open_clip:ViT-B-32:laion2b_s34b_b79k",
+    "checkpoint_revision": "1a25a446712ba5ee05982a381eed697ef9b435cf",
+    "checkpoint_sha256": "ac4f8c4b88af6d963118cbf40ad93176d092abbedfcb752601ae1866352656e6",
+    "fine_tuned": false
+  },
+  "protocol": {
+    "retrieval_mode": "global_calibration",
+    "same_category_only": false,
+    "full_gallery_ranked": true,
+    "query_excluded_from_gallery": true,
+    "split_isolation_key": "product_family_id",
+    "relevance_rule": "L3 iff product_family_id is identical; otherwise L0",
+    "bootstrap_iterations": 5000,
+    "random_baseline_iterations": 5000,
+    "random_seed": 20260917
+  },
+  "overall_metrics": {
+    "queries": 30,
+    "reciprocal_rank": 0.9666666667,
+    "hit_rate_at_1": 0.9333333333,
+    "hit_rate_at_5": 1.0,
+    "hit_rate_at_10": 1.0,
+    "recall_at_1": 0.2333333333,
+    "recall_at_5": 0.9416666667,
+    "recall_at_10": 1.0,
+    "ap_at_1": 0.9333333333,
+    "ap_at_5": 0.915,
+    "ap_at_10": 0.9481349206
+  },
+  "bootstrap_95_percent": {
+    "reciprocal_rank": [0.9166666667, 1.0],
+    "hit_rate_at_1": [0.8333333333, 1.0],
+    "hit_rate_at_5": [1.0, 1.0],
+    "recall_at_5": [0.8916666667, 0.9833333333],
+    "recall_at_10": [1.0, 1.0],
+    "ap_at_5": [0.8433333333, 0.975]
+  },
+  "uniform_random_baseline": {
+    "reciprocal_rank": 0.169081,
+    "hit_rate_at_1": 0.053747,
+    "hit_rate_at_5": 0.244807,
+    "hit_rate_at_10": 0.438073,
+    "recall_at_5": 0.067165,
+    "recall_at_10": 0.135197,
+    "ap_at_5": 0.032395
+  },
+  "opencv_evidence_agent": {
+    "opencv_version": "5.0.0",
+    "top_n": 5,
+    "comparisons": 150,
+    "trace_chains_valid": 30,
+    "mean_pair_seconds": 0.0347923645,
+    "mean_query_seconds": 0.1739618227,
+    "p95_query_seconds": 0.1933747972,
+    "final_decisions": {
+      "human_review": 30
+    },
+    "decision_reason": "single source cannot satisfy independent-source policy",
+    "fixed_fusion_ap_at_5": 0.9038888889,
+    "fixed_fusion_delta_vs_openclip_ap_at_5": -0.0111111111,
+    "validation_fitted_weights": {
+      "engineering_similarity": 0.6,
+      "geometry_score": 0.15,
+      "color_score": 0.25,
+      "silhouette_score": 0.0
+    },
+    "validation_fitted_ap_at_5": {
+      "validation": 0.8960416667,
+      "test": 0.97
+    },
+    "openclip_ap_at_5": {
+      "validation": 0.885,
+      "test": 0.975
+    },
+    "paired_test_delta_ap_at_5": -0.005,
+    "paired_test_delta_95_percent": [-0.015, 0.0],
+    "held_out_ranking_gain_demonstrated": false
+  }
+}

@@ -10,7 +10,7 @@ Copy metadata.example.csv to metadata.csv, then replace the example rows with re
 |---|---|
 | image_id | Unique image identifier |
 | image_path | Absolute path or path relative to this directory |
-| market | US or CN |
+| market | US, CN, or GLOBAL; GLOBAL is only for market-neutral calibration |
 | category | Shared category slug from configs/taxonomy.yaml |
 | product_id | Product-family identifier when known |
 | title | Original listing title |
@@ -50,10 +50,11 @@ Use lowercase category slugs exactly as written in configs/taxonomy.yaml.
 ## Collection stages
 
 1. **Pipeline check:** 2-5 images per market in a few categories.
-2. **G1 real-image gate:** 30 balanced queries and 120 labeled candidates over ten product concepts.
-3. **G2 benchmark:** 300 queries and about 1,500 images for initial confidence intervals.
-4. **Main study:** expand to 40+ categories and thousands of images, keeping the markets reasonably balanced.
-5. **Trend extension:** preserve observation timestamps and permitted engagement or sales signals.
+2. **G1A retrieval calibration:** 30 queries, 120 same-object positive views, and full split galleries using 150 rights-cleared, market-neutral images.
+3. **G1B market validity:** a separate 30-query, 150-image set with genuine U.S./China provenance.
+4. **G2 benchmark:** 300 queries and about 1,500 images for initial confidence intervals.
+5. **Main study:** expand to 40+ categories and thousands of images, keeping the markets reasonably balanced.
+6. **Trend extension:** preserve observation timestamps and permitted engagement or sales signals.
 
 For every source, record its name and usage terms. Do not treat two visually similar products as the same product unless the annotation supports that decision.
 
@@ -62,10 +63,12 @@ For every source, record its name and usage terms. Do not treat two visually sim
 The real-image pilot uses the stricter `pilot_manifest.template.csv`. In
 addition to the baseline fields it requires product-family IDs, exact source and
 license URLs, rights scope, commercial and redistribution booleans, SHA-256,
-split, and query eligibility.
+split, query eligibility, evaluation track, and market-label basis.
 
 ~~~bash
-cp data/pilot_manifest.template.csv data/pilot_manifest.csv
+cp data/pilot_asset_inbox.template.csv data/pilot_asset_inbox.csv
+PYTHONPATH=src python scripts/stage_pilot_assets.py \
+  --inbox data/pilot_asset_inbox.csv
 PYTHONPATH=src python scripts/validate_manifest.py \
   --manifest data/pilot_manifest.csv \
   --pilot \
@@ -73,6 +76,11 @@ PYTHONPATH=src python scripts/validate_manifest.py \
   --intended-use research
 ~~~
 
-`data/pilot_queries.template.csv` preregisters the 30-query G1 sampling frame.
-It is a collection plan, not observed data. See
+`data/g1a_queries.template.csv` preregisters market-neutral calibration.
+`data/pilot_queries.template.csv` preregisters the separately gated G1B
+cross-market sampling frame. They are collection plans, not observed data. See
 [the real-image pilot protocol](../docs/real_image_pilot_protocol.md).
+
+Deterministic files under `data/locks/` contain hashes, dimensions, split keys,
+and dataset digests but no image bytes. A lock verifies that regenerated local
+data match the exact evaluated asset set without redistributing source images.

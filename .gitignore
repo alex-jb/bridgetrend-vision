@@ -12,6 +12,9 @@ data/raw/
 data/processed/
 data/metadata.csv
 data/pilot_manifest.csv
+data/pilot_asset_inbox.csv
+data/pilot_images/
+data/g1a_gso_inbox/
 results/
 artifacts/
 checkpoints/
@@ -21,3 +24,5 @@ checkpoints/
 *.npy
 *.npz
 *.egg-info/
+build/
+dist/

@@ -17,6 +17,7 @@ retrieve more evidence, request human review, or reject it.
 - [Closed-loop evidence-session protocol](docs/evidence_session_protocol.md)
 - [OpenCV retrieval evidence provider](docs/opencv_evidence_provider.md)
 - [Rights-cleared real-image pilot](docs/real_image_pilot_protocol.md)
+- [G1A real-image OpenCLIP calibration](docs/g1a_openclip_baseline_2026-09-17.md)
 - [Real OpenCLIP smoke-test record](docs/openclip_smoke_test_2026-09-17.md)
 
 Run a deterministic decision trace without downloading a model:
@@ -110,14 +111,16 @@ The pipeline is developed in stages so that data problems are found before expen
 | Stage | Purpose | Planned scale |
 |---|---|---|
 | Pipeline check | Confirm manifest, image loading, and output files | 20-50 images |
-| Rights-cleared G1 | Verify real model, provenance and labels | 30 queries, 150 images, 10 concepts |
+| Rights-cleared G1A | Verify real model, provenance and labels without market claims | 30 queries, 150 images, 10 concepts |
+| Market-valid G1B | Verify authentic U.S./China source labels | 30 queries, 150 images, 10 concepts |
 | Benchmark G2 | Compare cross-market retrieval behavior | 300 queries, about 1,500 images |
 | Main study | Report reliable overall and per-category metrics | 40+ categories, thousands of images |
 | Research extension | Add time-aware clustering and trend evidence | Depends on timestamp and interaction data |
 
 The earlier course baseline retains five broad pilot categories for
 comparability. Competition G1 uses the ten concept-level strata in
-`data/pilot_queries.template.csv`; neither list is the final research limit.
+`data/g1a_queries.template.csv` and `data/pilot_queries.template.csv`; neither
+list is the final research limit.
 See [configs/taxonomy.yaml](configs/taxonomy.yaml).
 
 ## Quick start
@@ -174,6 +177,18 @@ See [docs/annotation_protocol.md](docs/annotation_protocol.md) for the L0-L3
 rules and edge cases. The command writes per_query_metrics.csv and
 summary_metrics.csv.
 
+For the market-neutral G1A multi-view task, use the strict pilot protocol and
+the identity evaluator. It reports hit rate and multi-positive recall
+separately, adds MRR, and writes bootstrap and uniform-random baselines:
+
+~~~bash
+PYTHONPATH=src python scripts/evaluate_g1a_identity.py \
+  --retrieval results/g1a_openclip/retrieval_results.csv \
+  --judgments results/g1a_openclip/identity_judgments.csv \
+  --output-dir results/g1a_openclip/evaluation \
+  --ks 1 5 10
+~~~
+
 ## Repository structure
 
 ~~~text
@@ -202,8 +217,12 @@ All members share labeling, experiment review, documentation, and presentation w
 
 ## Status
 
-Milestone 2 is active. The OpenCV closed-loop evidence provider and deterministic
-fixture suite are complete. The next gate is the 30-query, 150-image
-rights-cleared pilot; it is explicitly a pipeline/calibration gate, not the
-paper's final sample. The repository now supports model-backed OpenCLIP scoring,
-provenance-complete pilot validation, and product-family split isolation.
+Milestone 2 is active. G1A acquisition, byte/provenance audit, deterministic
+identity labels, full-gallery OpenCLIP retrieval, bootstrap intervals, and a
+uniform-random baseline are complete on 150 licensed images. OpenCLIP achieved
+0.933 Hit@1 and 0.942 multi-positive Recall@5; these are market-neutral
+calibration results, not U.S./China evidence. The 30-query OpenCV 5 sweep also
+completed with 150 pair comparisons and 30/30 valid trace chains. Its fixed and
+validation-fitted fusion did not improve held-out ranking, so that negative
+result is retained. G1A passes its technical gate; G1B market validity remains
+the next claim-bearing gate.
