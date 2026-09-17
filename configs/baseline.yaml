@@ -1,0 +1,21 @@
+experiment_name: openclip_vit_b32_baseline
+seed: 42
+
+model:
+  name: ViT-B-32
+  pretrained: laion2b_s34b_b79k
+  batch_size: 32
+
+retrieval:
+  metric: cosine
+  top_k: [1, 5, 10]
+  cross_market_only: true
+
+evaluation:
+  relevance_levels:
+    L3: exact_or_near_exact_product
+    L2: close_substitute
+    L1: shared_visual_trend
+    L0: unrelated
+  metrics: [recall_at_k, mean_average_precision, ndcg]
+
