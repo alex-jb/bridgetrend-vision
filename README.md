@@ -19,6 +19,7 @@ retrieve more evidence, request human review, or reject it.
 - [Rights-cleared real-image pilot](docs/real_image_pilot_protocol.md)
 - [G1A real-image OpenCLIP calibration](docs/g1a_openclip_baseline_2026-09-17.md)
 - [Real OpenCLIP smoke-test record](docs/openclip_smoke_test_2026-09-17.md)
+- [G1B 40-concept sampling protocol](docs/g1b_concept_sampling_protocol.md)
 
 Run a deterministic decision trace without downloading a model:
 
@@ -112,7 +113,7 @@ The pipeline is developed in stages so that data problems are found before expen
 |---|---|---|
 | Pipeline check | Confirm manifest, image loading, and output files | 20-50 images |
 | Rights-cleared G1A | Verify real model, provenance and labels without market claims | 30 queries, 150 images, 10 concepts |
-| Market-valid G1B | Verify authentic U.S./China source labels | 30 queries, 150 images, 10 concepts |
+| Market-valid G1B | Verify authentic U.S./China source labels on a balanced preregistered frame | 40 concepts, 160 query anchors, at least 400 visual assets |
 | Benchmark G2 | Compare cross-market retrieval behavior | 300 queries, about 1,500 images |
 | Main study | Report reliable overall and per-category metrics | 40+ categories, thousands of images |
 | Research extension | Add time-aware clustering and trend evidence | Depends on timestamp and interaction data |
@@ -201,6 +202,19 @@ market provenance, and visual reuse rights are not interchangeable. See
 `configs/g1b_source_plan.yaml`. G1B scoring must remain blocked until both
 markets have two independent timestamped sources and one rights-cleared visual
 source.
+
+Validate the balanced 40-concept sampling frame and regenerate its 80-row
+concept-market acquisition plan:
+
+~~~bash
+PYTHONPATH=src python scripts/check_g1b_concept_registry.py \
+  --output-csv data/g1b_acquisition_matrix.csv
+~~~
+
+All transfer labels intentionally remain `unassigned`. The registry balances
+eight category groups across emerging candidates, mature anchors, stable
+controls, ambiguity probes, and seasonal controls; it does not encode the
+answer the model is supposed to predict.
 
 ## Repository structure
 

@@ -79,7 +79,12 @@ Every visual row must also resolve through the strict pilot manifest with:
 
 ## Scale after the gate
 
-G1B is a validity gate, not the final benchmark. Passing it unlocks:
+G1B is a validity gate, not the final benchmark. Its acquisition frame is now
+pre-registered as 40 balanced concepts in
+`configs/g1b_concept_registry.yaml`; see
+`docs/g1b_concept_sampling_protocol.md`. The minimum G1B collection plan is 160
+query anchors and 400 rights-cleared visual assets across the two markets.
+Passing the source and concept gates unlocks:
 
 - **G2:** at least 300 cross-market queries and about 1,500 images;
 - **G3:** at least 1,000 queries, 5,000+ images, 40+ concepts, repeated weekly
