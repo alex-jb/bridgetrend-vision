@@ -22,12 +22,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pretrained", default="laion2b_s34b_b79k")
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument(
+        "--same-category-only",
+        action="store_true",
+        help="retrieve only from the same category in the other market",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    metadata = load_manifest(args.manifest)
+    metadata = load_manifest(args.manifest, check_files=True)
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     encoder = OpenCLIPEncoder(model_name=args.model, pretrained=args.pretrained)
@@ -40,14 +45,19 @@ def main() -> None:
 
     rows: list[dict[str, object]] = []
     markets = metadata["market"].to_numpy()
+    categories = metadata["category"].to_numpy()
     for query_index, query in metadata.iterrows():
-        gallery_indices = np.flatnonzero(markets != query["market"])
+        gallery_mask = markets != query["market"]
+        if args.same_category_only:
+            gallery_mask &= categories == query["category"]
+        gallery_indices = np.flatnonzero(gallery_mask)
         if gallery_indices.size == 0:
             continue
+
         scores, local_indices = cosine_top_k(
             embeddings[query_index : query_index + 1],
             embeddings[gallery_indices],
-            top_k=args.top_k,
+            top_k=min(args.top_k, gallery_indices.size),
         )
         for rank, (score, local_index) in enumerate(
             zip(scores[0], local_indices[0]), start=1
@@ -73,4 +83,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
