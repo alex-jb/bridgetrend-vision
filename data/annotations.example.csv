@@ -1,0 +1,4 @@
+query_id,match_id,relevance,annotator,notes
+us_tshirt_001,cn_tshirt_001,2,alex,Similar graphic style and product type
+us_sneaker_001,cn_sneaker_001,3,alex,Near-identical silhouette
+us_bag_001,cn_bag_001,1,alex,Shared color and style but different construction
