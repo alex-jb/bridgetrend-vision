@@ -28,7 +28,9 @@ def iter_query_galleries(
     markets = metadata["market"].to_numpy()
     categories = metadata["category"].to_numpy()
     if "query_eligible" in metadata.columns:
-        query_mask = metadata["query_eligible"].astype(bool).to_numpy()
+        # Pandas 3 may expose a read-only NumPy view.  This mask is refined
+        # below, so own the array instead of mutating pandas-managed memory.
+        query_mask = metadata["query_eligible"].astype(bool).to_numpy(copy=True)
     else:
         query_mask = np.ones(len(metadata), dtype=bool)
 
