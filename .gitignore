@@ -15,6 +15,10 @@ data/pilot_manifest.csv
 data/pilot_asset_inbox.csv
 data/pilot_images/
 data/g1a_gso_inbox/
+data/g1b_trend_observations.csv
+data/g1b_baidu_double_entry.csv
+data/g1b_source_observations.csv
+data/g1b_exports/
 results/
 artifacts/
 checkpoints/

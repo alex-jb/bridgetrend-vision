@@ -104,3 +104,33 @@ PYTHONPATH=src python scripts/check_g1b_concept_registry.py \
 Actual records belong in the observation contract defined by
 `g1b_source_observations.template.csv`; never convert acquisition targets into
 synthetic evidence rows.
+
+## G1B Wave 1 trend intake
+
+`g1b_wave1_collection_plan.csv` narrows the frozen 40-concept frame to the
+first ten concepts and both markets (20 plan rows). It remains a plan, not
+evidence. Machine-readable search-interest observations use
+`g1b_trend_observations.template.csv`; Baidu Index screenshot values must first
+pass the independent double-entry contract in
+`g1b_baidu_double_entry.template.csv`.
+
+Local working files and raw exports are ignored by Git:
+
+~~~text
+data/g1b_exports/
+data/g1b_trend_observations.csv
+data/g1b_baidu_double_entry.csv
+data/g1b_source_observations.csv
+~~~
+
+Import and audit them with:
+
+~~~bash
+PYTHONPATH=src python scripts/import_google_trends.py --help
+PYTHONPATH=src python scripts/adjudicate_baidu_transcription.py --help
+PYTHONPATH=src python scripts/report_g1b_wave1_coverage.py
+~~~
+
+Google Trends web values are normalized within each recorded query scope.
+Separate 0-100 exports must not be treated as one common absolute scale. See
+[the Wave 1 intake protocol](../docs/g1b_wave1_intake_protocol.md).

@@ -20,6 +20,7 @@ retrieve more evidence, request human review, or reject it.
 - [G1A real-image OpenCLIP calibration](docs/g1a_openclip_baseline_2026-09-17.md)
 - [Real OpenCLIP smoke-test record](docs/openclip_smoke_test_2026-09-17.md)
 - [G1B 40-concept sampling protocol](docs/g1b_concept_sampling_protocol.md)
+- [G1B Wave 1 trend-intake protocol](docs/g1b_wave1_intake_protocol.md)
 
 Run a deterministic decision trace without downloading a model:
 
@@ -215,6 +216,17 @@ All transfer labels intentionally remain `unassigned`. The registry balances
 eight category groups across emerging candidates, mature anchors, stable
 controls, ambiguity probes, and seasonal controls; it does not encode the
 answer the model is supposed to predict.
+
+Run the Wave 1 coverage audit after each approved data import:
+
+~~~bash
+PYTHONPATH=src python scripts/report_g1b_wave1_coverage.py
+~~~
+
+The audit reports plans and actual observations separately. It cannot mark the
+wave claim-ready until source approval, two timestamp sources, 104 historical
+periods, and rights-cleared visual coverage all pass for every concept-market
+cell.
 
 ## Repository structure
 
