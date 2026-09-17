@@ -1,0 +1,1 @@
+entry_id,transcriber_id,concept_id,market,source_id,keyword,period_start,period_end,frequency,raw_value,capture_sha256,capture_ref,captured_at_utc,query_geo,query_timeframe,query_category,normalization_scope,batch_id,notes

@@ -65,3 +65,27 @@ pilot_categories:
   - handbag
   - headphones
   - lamp
+
+competition_g1_concepts:
+  blind_box_collectible: collectible_figure
+  plush_bag_charm: plush_toy
+  sculptural_handbag: handbag
+  magnetic_phone_accessory: phone_accessory
+  insulated_tumbler: drinkware
+  compact_beauty_tool: beauty_tool
+  ambient_table_lamp: lamp
+  open_ear_headphones: headphones
+  retro_sneakers: sneakers
+  modular_storage: storage_box
+
+g1a_calibration_concepts:
+  action_figure_calibration: collectible_figure
+  stuffed_toy_calibration: plush_toy
+  backpack_calibration: backpack
+  gaming_mouse_calibration: mouse
+  mug_calibration: drinkware
+  personal_care_tool_calibration: beauty_tool
+  lighting_object_calibration: lamp
+  gaming_headset_calibration: headphones
+  athletic_shoe_calibration: sneakers
+  storage_basket_calibration: storage_box

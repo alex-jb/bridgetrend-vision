@@ -14,7 +14,39 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install lightweight test dependencies
-        run: pip install numpy pytest
+        run: >-
+          pip install "opencv-python-headless>=5,<6" "Pillow>=10,<13"
+          numpy pandas PyYAML pytest ruff
+      - name: Run Ruff
+        run: ruff check .
       - name: Run unit tests
         run: pytest
-
+      - name: Smoke test evidence-agent CLI
+        env:
+          PYTHONPATH: src
+        run: >-
+          python scripts/run_evidence_agent.py
+          --top-similarity 0.91
+          --runner-up-similarity 0.76
+          --quality-score 0.82
+          --evidence-count 3
+          --source-diversity 2
+      - name: Smoke test closed-loop evidence session
+        env:
+          PYTHONPATH: src
+        run: >-
+          python scripts/run_evidence_session.py
+          --scenario data/evidence_session.example.json
+          --output results/evidence_sessions/ci-smoke.json
+      - name: Rebuild OpenCV demo fixture pack
+        env:
+          PYTHONPATH: src
+        run: python scripts/generate_demo_fixture_pack.py --output-dir /tmp/bridgetrend-demo-pack
+      - name: Smoke test real OpenCV evidence provider
+        env:
+          PYTHONPATH: src
+        run: >-
+          python scripts/run_opencv_evidence_demo.py
+          --pack /tmp/bridgetrend-demo-pack/cases.json
+          --case exact_match
+          --output results/evidence_sessions/opencv-provider-smoke.json

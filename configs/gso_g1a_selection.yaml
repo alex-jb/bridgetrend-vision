@@ -1,0 +1,67 @@
+version: 1
+source: google_scanned_objects
+owner: GoogleResearch
+views_per_object: [0, 1, 2, 3, 4]
+splits_by_model_position: [validation, validation, test]
+
+concepts:
+  action_figure_calibration:
+    category: collectible_figure
+    models:
+      - Schleich_Spinosaurus_Action_Figure
+      - Schleich_Lion_Action_Figure
+      - Teenage_Mutant_Ninja_Turtles_Rahzar_Action_Figure
+  stuffed_toy_calibration:
+    category: plush_toy
+    models:
+      - Sootheze_Toasty_Orca
+      - Sootheze_Cold_Therapy_Elephant
+      - Lovable_Huggable_Cuddly_Boutique_Teddy_Bear_Beige
+  backpack_calibration:
+    category: backpack
+    models:
+      - Jansport_School_Backpack_Blue_Streak
+      - Olive_Kids_Mermaids_Pack_n_Snack_Backpack
+      - Olive_Kids_Dinosaur_Land_Sidekick_Backpack
+  gaming_mouse_calibration:
+    category: mouse
+    models:
+      - Razer_Taipan_White_Ambidextrous_Gaming_Mouse
+      - Razer_Taipan_Black_Ambidextrous_Gaming_Mouse
+      - Razer_Naga_MMO_Gaming_Mouse
+  mug_calibration:
+    category: drinkware
+    models:
+      - Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White
+      - Room_Essentials_Mug_White_Yellow
+      - Cole_Hardware_Mug_Classic_Blue
+  personal_care_tool_calibration:
+    category: beauty_tool
+    models:
+      - Remington_TStudio_Hair_Dryer
+      - Sonicare_2_Series_Toothbrush_Plaque_Control
+      - Remington_1_12_inch_Hair_Straightener
+  lighting_object_calibration:
+    category: lamp
+    models:
+      - HeavyDuty_Flashlight
+      - 3D_Dollhouse_Lamp
+      - Philips_EcoVantage_43_W_Light_Bulbs_Natural_Light_2_pack
+  gaming_headset_calibration:
+    category: headphones
+    models:
+      - Razer_Kraken_Pro_headset_Full_size_Black
+      - Razer_Kraken_71_Chroma_headset_Full_size_Black
+      - HyperX_Cloud_II_Headset_Red
+  athletic_shoe_calibration:
+    category: sneakers
+    models:
+      - ZX700_mzGbdP3u6JB
+      - ZigKick_Hoops
+      - adistar_boost_m
+  storage_basket_calibration:
+    category: storage_box
+    models:
+      - Threshold_Basket_Natural_Finish_Fabric_Liner_Small
+      - Target_Basket_Medium
+      - Smith_Hawken_Woven_BasketTray_Organizer_with_3_Compartments_95_x_9_x_13

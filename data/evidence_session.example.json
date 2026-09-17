@@ -1,0 +1,32 @@
+{
+  "session_id": "plush-bag-charm-demo-001",
+  "max_acquisitions": 2,
+  "initial_evidence": {
+    "top_similarity": 0.9,
+    "runner_up_similarity": 0.79,
+    "quality_score": 0.8,
+    "evidence_count": 1,
+    "source_diversity": 1
+  },
+  "acquisitions": [
+    {
+      "evidence_id": "cn-independent-listing-002",
+      "tool_name": "retrieve_independent_marketplace_source",
+      "source": "approved_demo_fixture",
+      "artifact_refs": [
+        "fixtures://cn/plush-bag-charm/listing-002"
+      ],
+      "metadata": {
+        "market": "CN",
+        "evidence_role": "independent_confirmation"
+      },
+      "evidence": {
+        "top_similarity": 0.92,
+        "runner_up_similarity": 0.75,
+        "quality_score": 0.86,
+        "evidence_count": 3,
+        "source_diversity": 2
+      }
+    }
+  ]
+}

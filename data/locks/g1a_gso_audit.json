@@ -1,0 +1,32 @@
+{
+  "category_count": 10,
+  "counts_by_market": {
+    "GLOBAL": 150
+  },
+  "counts_by_source": {
+    "google_scanned_objects": 150
+  },
+  "counts_by_split": {
+    "test": 50,
+    "validation": 100
+  },
+  "counts_by_track": {
+    "retrieval_calibration": 150
+  },
+  "cross_split_near_duplicate_count": 0,
+  "dataset_digest": "2cbfd040db64bc7ac3eb8ba7580b7dc334dc312e418eb7e1e445970fc21d7a50",
+  "image_count": 150,
+  "near_duplicate_pairs": [
+    {
+      "cross_split": false,
+      "hamming_distance": 4,
+      "left_image_id": "gso-lighting-object-02-v3",
+      "right_image_id": "gso-lighting-object-02-v4",
+      "same_product_family": true
+    }
+  ],
+  "product_family_count": 30,
+  "quality_flags": [],
+  "query_eligible_count": 30,
+  "schema_version": 1
+}

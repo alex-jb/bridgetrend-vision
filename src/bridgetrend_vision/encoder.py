@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 
@@ -22,13 +22,16 @@ class OpenCLIPEncoder:
 
         self.torch = torch
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.model_id = f"open_clip:{model_name}:{pretrained}"
         self.model, _, self.preprocess = open_clip.create_model_and_transforms(
             model_name, pretrained=pretrained
         )
         self.model = self.model.to(self.device).eval()
         self.tokenizer = open_clip.get_tokenizer(model_name)
 
-    def encode_images(self, image_paths: Iterable[str | Path], batch_size: int = 32) -> np.ndarray:
+    def encode_images(
+        self, image_paths: Iterable[str | Path], batch_size: int = 32
+    ) -> np.ndarray:
         from PIL import Image
 
         paths = [Path(path) for path in image_paths]
@@ -54,4 +57,3 @@ class OpenCLIPEncoder:
             features = self.model.encode_text(tokens)
             features = features / features.norm(dim=-1, keepdim=True)
         return features.cpu().numpy().astype(np.float32)
-
