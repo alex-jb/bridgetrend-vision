@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from bridgetrend_vision.pilot_audit import audit_pilot_dataset, perceptual_hash
 
@@ -38,6 +38,19 @@ COLUMNS = [
 def make_image(path: Path, color: tuple[int, int, int]) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     Image.new("RGB", (256, 256), color).save(path)
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def make_near_duplicate_image(path: Path, center_red: int) -> str:
+    """Create a structured pair whose pHash is stable across BLAS builds."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image = Image.new("RGB", (256, 256), "white")
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((48, 48, 208, 208), fill=(20, 20, 20))
+    draw.ellipse((88, 88, 168, 168), fill=(180, 40, 40))
+    image.putpixel((128, 128), (center_red, 40, 40))
+    image.save(path)
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
@@ -90,8 +103,8 @@ def test_audit_can_fail_on_cross_split_near_duplicates(tmp_path: Path):
     first = tmp_path / "images/first.png"
     second = tmp_path / "images/second.png"
     rows = [
-        row("img1", first, make_image(first, (20, 20, 20)), "validation"),
-        row("img2", second, make_image(second, (21, 21, 21)), "test"),
+        row("img1", first, make_near_duplicate_image(first, 180), "validation"),
+        row("img2", second, make_near_duplicate_image(second, 181), "test"),
     ]
     manifest = tmp_path / "pilot.csv"
     pd.DataFrame(rows, columns=COLUMNS).to_csv(manifest, index=False)
