@@ -7,6 +7,10 @@ image-processing tool. A retrieval model supplies a candidate and a normalized
 similarity input; OpenCV 5 then measures whether the image pair provides enough
 visual support for the agent's next decision.
 
+`score_retrieval_candidates` provides the model-backed path. It encodes each
+unique image once, preserves raw cosine, applies a named engineering calibrator,
+and creates the observations consumed by this provider.
+
 ## Measurement pipeline
 
 1. Decode, normalize contrast, and compute source-image quality.
@@ -28,6 +32,8 @@ The current preregistered engineering score is:
 
 This is a bounded score in `[0, 1]`, not a calibrated probability. The weights
 remain versioned engineering defaults until the real validation split is frozen.
+The upstream affine cosine mapping is likewise provisional and must be replaced
+using validation data before accuracy or confidence claims are reported.
 
 ## Closed-loop behavior
 
@@ -36,6 +42,8 @@ Every acquired observation includes:
 - evidence, candidate, source, and market identifiers;
 - query and candidate artifact paths;
 - retrieval, geometry, color, silhouette, and fused scores;
+- raw embedding cosine, retrieval model ID, and calibration ID when a model is
+  used;
 - ratio-test matches, RANSAC inliers, pair quality, and evidence role;
 - the resulting evidence count and independent-source count.
 

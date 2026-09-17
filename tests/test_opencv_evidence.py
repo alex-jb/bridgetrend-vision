@@ -54,9 +54,7 @@ def test_fixture_pack_is_deterministic_and_complete(demo_pack):
     assert payload["image_count"] == 24
     assert len(payload["cases"]) == 6
     assert (root / "contact_sheet.png").is_file()
-    image_paths = [
-        root / case["query_image"] for case in payload["cases"]
-    ] + [
+    image_paths = [root / case["query_image"] for case in payload["cases"]] + [
         root / observation["image_path"]
         for case in payload["cases"]
         for observation in case["observations"]
@@ -129,3 +127,38 @@ def test_higher_quality_request_selects_the_clean_query_view(demo_pack):
         "low_quality_recovery-evidence-2",
     )
     assert result.states[-1].evidence.quality_score > 0.55
+
+
+def test_trace_preserves_embedding_model_and_raw_cosine(demo_pack):
+    root, payload = demo_pack
+    case = _case(payload, "exact_match")
+    item = case["observations"][0]
+    observation = RetrievalObservation(
+        evidence_id=item["evidence_id"],
+        candidate_id=item["candidate_id"],
+        image_path=root / item["image_path"],
+        source=item["source"],
+        market=item["market"],
+        retrieval_similarity=item["retrieval_similarity"],
+        evidence_roles=tuple(item["evidence_roles"]),
+        raw_cosine_similarity=0.37,
+        retrieval_calibration="pilot-affine-v1",
+        retrieval_model="open_clip:test-model:test-weights",
+    )
+    provider = OpenCVRetrievalEvidenceProvider(
+        query_path=root / case["query_image"],
+        query_source=case["query_source"],
+        observations=(observation,),
+    )
+    result = EvidenceSession(provider=provider, max_acquisitions=1).run(
+        session_id="test-model-provenance",
+        initial_evidence=VisualEvidence(**case["initial_evidence"]),
+    )
+    transition = next(
+        event for event in result.events if event.event_type == "transition"
+    )
+    metadata = transition.payload["update"]["metadata"]
+
+    assert metadata["raw_cosine_similarity"] == pytest.approx(0.37)
+    assert metadata["retrieval_calibration"] == "pilot-affine-v1"
+    assert metadata["retrieval_model"] == "open_clip:test-model:test-weights"

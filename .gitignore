@@ -11,6 +11,7 @@ __pycache__/
 data/raw/
 data/processed/
 data/metadata.csv
+data/pilot_manifest.csv
 results/
 artifacts/
 checkpoints/

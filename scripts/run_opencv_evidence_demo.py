@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from bridgetrend_vision.encoder import OpenCLIPEncoder
 from bridgetrend_vision.evidence_agent import (
     AgentPolicy,
     VisualEvidence,
@@ -19,6 +20,12 @@ from bridgetrend_vision.evidence_session import EvidenceSession
 from bridgetrend_vision.opencv_evidence import (
     OpenCVRetrievalEvidenceProvider,
     RetrievalObservation,
+)
+from bridgetrend_vision.retrieval_scoring import (
+    AffineCosineCalibrator,
+    RetrievalCandidate,
+    RetrievalScore,
+    score_retrieval_candidates,
 )
 
 
@@ -30,9 +37,23 @@ def parse_args() -> argparse.Namespace:
         default=Path("data/demo_fixture_pack/cases.json"),
     )
     parser.add_argument("--case", required=True)
-    parser.add_argument("--policy", type=Path, default=Path("configs/agent_policy.yaml"))
+    parser.add_argument(
+        "--policy", type=Path, default=Path("configs/agent_policy.yaml")
+    )
     parser.add_argument("--output", type=Path)
     parser.add_argument("--no-enforce-opencv5", action="store_true")
+    parser.add_argument(
+        "--rescore-openclip",
+        action="store_true",
+        help="replace fixture scores with real OpenCLIP embedding cosine",
+    )
+    parser.add_argument("--model", default="ViT-B-32")
+    parser.add_argument("--pretrained", default="laion2b_s34b_b79k")
+    parser.add_argument("--device")
+    parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--calibration-low", type=float, default=-1.0)
+    parser.add_argument("--calibration-high", type=float, default=1.0)
+    parser.add_argument("--calibration-id", default="cosine-unit-interval-v1")
     return parser.parse_args()
 
 
@@ -58,19 +79,50 @@ def main() -> None:
     root = args.pack.parent
     policy_payload = yaml.safe_load(args.policy.read_text(encoding="utf-8"))
     policy = AgentPolicy(**policy_payload["decision_thresholds"])
-    observations = tuple(
-        RetrievalObservation(
-            evidence_id=item["evidence_id"],
-            candidate_id=item["candidate_id"],
-            image_path=_resolve(root, item["image_path"]),
-            query_image_path=_resolve(root, item.get("query_image_path")),
-            source=item["source"],
-            market=item["market"],
-            retrieval_similarity=float(item["retrieval_similarity"]),
-            evidence_roles=tuple(item["evidence_roles"]),
+    embedding_scores: tuple[RetrievalScore, ...] = ()
+    if args.rescore_openclip:
+        candidates = tuple(
+            RetrievalCandidate(
+                evidence_id=item["evidence_id"],
+                candidate_id=item["candidate_id"],
+                image_path=_resolve(root, item["image_path"]),
+                query_image_path=_resolve(root, item.get("query_image_path")),
+                source=item["source"],
+                market=item["market"],
+                evidence_roles=tuple(item["evidence_roles"]),
+            )
+            for item in case["observations"]
         )
-        for item in case["observations"]
-    )
+        encoder = OpenCLIPEncoder(
+            model_name=args.model,
+            pretrained=args.pretrained,
+            device=args.device,
+        )
+        observations, embedding_scores = score_retrieval_candidates(
+            query_path=_resolve(root, case["query_image"]),
+            candidates=candidates,
+            encoder=encoder,
+            calibrator=AffineCosineCalibrator(
+                lower_cosine=args.calibration_low,
+                upper_cosine=args.calibration_high,
+                calibration_id=args.calibration_id,
+            ),
+            batch_size=args.batch_size,
+        )
+    else:
+        observations = tuple(
+            RetrievalObservation(
+                evidence_id=item["evidence_id"],
+                candidate_id=item["candidate_id"],
+                image_path=_resolve(root, item["image_path"]),
+                query_image_path=_resolve(root, item.get("query_image_path")),
+                source=item["source"],
+                market=item["market"],
+                retrieval_similarity=float(item["retrieval_similarity"]),
+                evidence_roles=tuple(item["evidence_roles"]),
+            )
+            for item in case["observations"]
+        )
     provider = OpenCVRetrievalEvidenceProvider(
         query_path=_resolve(root, case["query_image"]),
         query_source=case["query_source"],
@@ -93,6 +145,7 @@ def main() -> None:
         "expected_decision": case["expected_decision"],
         "expectation_met": result.final_trace.decision.value
         == case["expected_decision"],
+        "embedding_scores": [item.to_dict() for item in embedding_scores],
         "comparisons": [item.to_dict() for item in provider.comparisons],
         "session": result.to_dict(),
     }

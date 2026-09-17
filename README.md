@@ -16,6 +16,8 @@ retrieve more evidence, request human review, or reject it.
 - [Agent policy](configs/agent_policy.yaml)
 - [Closed-loop evidence-session protocol](docs/evidence_session_protocol.md)
 - [OpenCV retrieval evidence provider](docs/opencv_evidence_provider.md)
+- [Rights-cleared real-image pilot](docs/real_image_pilot_protocol.md)
+- [Real OpenCLIP smoke-test record](docs/openclip_smoke_test_2026-09-17.md)
 
 Run a deterministic decision trace without downloading a model:
 
@@ -58,6 +60,21 @@ foreground color, and silhouette overlap. Its measurements are stored in the
 same hash-linked session trace. The generated fixture pack is CC0 and contains
 no external product photography or trademarks.
 
+Rescore candidates with real OpenCLIP embeddings before the OpenCV evidence
+step:
+
+~~~bash
+PYTHONPATH=src python scripts/run_opencv_evidence_demo.py \
+  --case exact_match \
+  --rescore-openclip \
+  --output results/openclip_evidence/exact_match.json
+~~~
+
+This stores raw cosine, model ID, calibration ID, the bounded engineering score,
+and OpenCV measurements separately. The default LAION checkpoint is a research
+baseline, not a production approval, and the provisional score is not a
+probability.
+
 Install the OpenCV 5 competition extra and inspect one image:
 
 ~~~bash
@@ -93,11 +110,15 @@ The pipeline is developed in stages so that data problems are found before expen
 | Stage | Purpose | Planned scale |
 |---|---|---|
 | Pipeline check | Confirm manifest, image loading, and output files | 20-50 images |
-| Pilot baseline | Compare cross-market retrieval behavior | 300-600 images, 5 categories |
+| Rights-cleared G1 | Verify real model, provenance and labels | 30 queries, 150 images, 10 concepts |
+| Benchmark G2 | Compare cross-market retrieval behavior | 300 queries, about 1,500 images |
 | Main study | Report reliable overall and per-category metrics | 40+ categories, thousands of images |
 | Research extension | Add time-aware clustering and trend evidence | Depends on timestamp and interaction data |
 
-The five pilot categories are t_shirt, sneakers, handbag, headphones, and lamp. They cover different visual structures and are not the final research limit. See [configs/taxonomy.yaml](configs/taxonomy.yaml).
+The earlier course baseline retains five broad pilot categories for
+comparability. Competition G1 uses the ten concept-level strata in
+`data/pilot_queries.template.csv`; neither list is the final research limit.
+See [configs/taxonomy.yaml](configs/taxonomy.yaml).
 
 ## Quick start
 
@@ -181,4 +202,8 @@ All members share labeling, experiment review, documentation, and presentation w
 
 ## Status
 
-Milestone 1 is active: prepare the first paired U.S./China image manifest and run the OpenCLIP retrieval baseline. The L0-L3 annotation and metric pipeline is ready for the first results.
+Milestone 2 is active. The OpenCV closed-loop evidence provider and deterministic
+fixture suite are complete. The next gate is the 30-query, 150-image
+rights-cleared pilot; it is explicitly a pipeline/calibration gate, not the
+paper's final sample. The repository now supports model-backed OpenCLIP scoring,
+provenance-complete pilot validation, and product-family split isolation.

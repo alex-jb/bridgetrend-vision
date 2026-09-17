@@ -16,6 +16,7 @@ from .evidence_session import (
     TraceEvent,
     verify_trace_chain,
 )
+from .manifest import load_pilot_manifest
 from .opencv_evidence import (
     OpenCVRetrievalEvidenceProvider,
     PairMatchEvidence,
@@ -23,8 +24,15 @@ from .opencv_evidence import (
     compare_product_images,
 )
 from .retrieval import cosine_top_k, l2_normalize
+from .retrieval_scoring import (
+    AffineCosineCalibrator,
+    RetrievalCandidate,
+    RetrievalScore,
+    score_retrieval_candidates,
+)
 
 __all__ = [
+    "AffineCosineCalibrator",
     "AgentPolicy",
     "Decision",
     "DecisionTrace",
@@ -35,13 +43,17 @@ __all__ = [
     "OpenCVRetrievalEvidenceProvider",
     "PairMatchEvidence",
     "QueuedEvidenceProvider",
+    "RetrievalCandidate",
     "RetrievalObservation",
+    "RetrievalScore",
     "TraceEvent",
     "VisualEvidence",
     "VisualEvidenceAgent",
     "compare_product_images",
     "cosine_top_k",
     "l2_normalize",
+    "load_pilot_manifest",
+    "score_retrieval_candidates",
     "verify_trace_chain",
 ]
-__version__ = "0.4.0"
+__version__ = "0.5.0"

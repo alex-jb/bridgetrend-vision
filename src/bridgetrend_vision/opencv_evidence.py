@@ -35,6 +35,9 @@ class RetrievalObservation:
         "independent_marketplace_source",
     )
     query_image_path: Path | None = None
+    raw_cosine_similarity: float | None = None
+    retrieval_calibration: str = "precomputed_or_fixture_v0"
+    retrieval_model: str = "unspecified"
 
     def __post_init__(self) -> None:
         for name in ("evidence_id", "candidate_id", "source", "market"):
@@ -42,6 +45,14 @@ class RetrievalObservation:
                 raise ValueError(f"{name} cannot be empty")
         if not 0.0 <= self.retrieval_similarity <= 1.0:
             raise ValueError("retrieval_similarity must be between 0 and 1")
+        if self.raw_cosine_similarity is not None and not (
+            -1.0 <= self.raw_cosine_similarity <= 1.0
+        ):
+            raise ValueError("raw_cosine_similarity must be between -1 and 1")
+        if not self.retrieval_calibration.strip():
+            raise ValueError("retrieval_calibration cannot be empty")
+        if not self.retrieval_model.strip():
+            raise ValueError("retrieval_model cannot be empty")
         if not self.evidence_roles or any(
             not str(role).strip() for role in self.evidence_roles
         ):
@@ -265,6 +276,8 @@ class OpenCVRetrievalEvidenceProvider:
             "market": observation.market,
             "evidence_roles": ",".join(observation.evidence_roles),
             "retrieval_similarity": comparison.retrieval_similarity,
+            "retrieval_calibration": observation.retrieval_calibration,
+            "retrieval_model": observation.retrieval_model,
             "opencv_geometry_score": comparison.geometry_score,
             "opencv_color_score": comparison.color_score,
             "opencv_silhouette_score": comparison.silhouette_score,
@@ -274,6 +287,8 @@ class OpenCVRetrievalEvidenceProvider:
             "inlier_ratio": comparison.inlier_ratio,
             "pair_quality_score": comparison.quality_score,
         }
+        if observation.raw_cosine_similarity is not None:
+            metadata["raw_cosine_similarity"] = observation.raw_cosine_similarity
         return EvidenceUpdate(
             evidence_id=observation.evidence_id,
             tool_name="opencv_retrieval_evidence",
@@ -287,9 +302,7 @@ class OpenCVRetrievalEvidenceProvider:
         self, requested_evidence: tuple[str, ...]
     ) -> RetrievalObservation | None:
         remaining = [
-            item
-            for item in self.observations
-            if item.evidence_id not in self._used_ids
+            item for item in self.observations if item.evidence_id not in self._used_ids
         ]
         if not remaining:
             return None
@@ -352,7 +365,9 @@ def _letterbox_pair(
     scale = min(target_width / width, target_height / height)
     resized_width = max(1, round(width * scale))
     resized_height = max(1, round(height * scale))
-    resized = cv2.resize(image, (resized_width, resized_height), interpolation=cv2.INTER_AREA)
+    resized = cv2.resize(
+        image, (resized_width, resized_height), interpolation=cv2.INTER_AREA
+    )
     resized_mask = cv2.resize(
         mask,
         (resized_width, resized_height),
@@ -389,9 +404,7 @@ def _hsv_histogram_similarity(
     )
     cv2.normalize(query_hist, query_hist)
     cv2.normalize(candidate_hist, candidate_hist)
-    correlation = float(
-        cv2.compareHist(query_hist, candidate_hist, cv2.HISTCMP_CORREL)
-    )
+    correlation = float(cv2.compareHist(query_hist, candidate_hist, cv2.HISTCMP_CORREL))
     return _clamp01((correlation + 1.0) / 2.0)
 
 

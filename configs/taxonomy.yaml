@@ -65,3 +65,15 @@ pilot_categories:
   - handbag
   - headphones
   - lamp
+
+competition_g1_concepts:
+  blind_box_collectible: collectible_figure
+  plush_bag_charm: plush_toy
+  sculptural_handbag: handbag
+  magnetic_phone_accessory: phone_accessory
+  insulated_tumbler: drinkware
+  compact_beauty_tool: beauty_tool
+  ambient_table_lamp: lamp
+  open_ear_headphones: headphones
+  retro_sneakers: sneakers
+  modular_storage: storage_box
