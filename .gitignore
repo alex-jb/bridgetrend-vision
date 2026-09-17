@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.DS_Store
+.idea/
+.vscode/
+
+# Large or generated research artifacts
+data/raw/
+data/processed/
+data/metadata.csv
+results/
+artifacts/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+
