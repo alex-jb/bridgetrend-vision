@@ -60,6 +60,33 @@ image_id,image_path,market,category,product_id,title,source,timestamp
 
 See [data/README.md](data/README.md) for the full data contract.
 
+## Evaluation workflow
+
+After the baseline creates retrieval_results.csv, generate separate judgment
+sheets for two annotators:
+
+~~~bash
+python scripts/prepare_annotations.py \
+  --retrieval results/baseline/retrieval_results.csv \
+  --output results/annotations/alex.csv \
+  --annotator alex \
+  --top-k 10
+~~~
+
+After independent labeling and adjudication, evaluate the final judgment file:
+
+~~~bash
+python scripts/evaluate_retrieval.py \
+  --retrieval results/baseline/retrieval_results.csv \
+  --judgments results/annotations/final.csv \
+  --output-dir results/evaluation \
+  --k 5
+~~~
+
+See [docs/annotation_protocol.md](docs/annotation_protocol.md) for the L0-L3
+rules and edge cases. The command writes per_query_metrics.csv and
+summary_metrics.csv.
+
 ## Repository structure
 
 ~~~text
@@ -88,4 +115,4 @@ All members share labeling, experiment review, documentation, and presentation w
 
 ## Status
 
-Milestone 1 is active: prepare the first paired U.S./China image manifest and run the OpenCLIP retrieval baseline.
+Milestone 1 is active: prepare the first paired U.S./China image manifest and run the OpenCLIP retrieval baseline. The L0-L3 annotation and metric pipeline is ready for the first results.
