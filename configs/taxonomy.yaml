@@ -1,0 +1,67 @@
+version: 1
+description: Shared product taxonomy for U.S.–China cross-market retrieval.
+target_category_count: 48
+
+groups:
+  fashion:
+    - t_shirt
+    - shirt
+    - hoodie
+    - sweater
+    - jacket
+    - dress
+    - skirt
+    - jeans
+    - trousers
+    - sneakers
+    - boots
+    - sandals
+    - handbag
+    - backpack
+    - watch
+    - sunglasses
+    - jewelry
+  beauty:
+    - lipstick
+    - facial_skincare
+    - perfume
+    - haircare
+    - beauty_tool
+  electronics:
+    - smartphone
+    - laptop
+    - tablet
+    - headphones
+    - smartwatch
+    - keyboard
+    - mouse
+    - camera
+    - phone_accessory
+  home:
+    - chair
+    - lamp
+    - storage_box
+    - cookware
+    - drinkware
+    - bedding
+    - small_appliance
+    - home_decor
+  sports_outdoor:
+    - fitness_equipment
+    - sportswear
+    - camping_gear
+    - outdoor_accessory
+  toys_hobbies:
+    - building_blocks
+    - plush_toy
+    - collectible_figure
+  pet:
+    - pet_accessory
+    - pet_bed
+
+pilot_categories:
+  - t_shirt
+  - sneakers
+  - handbag
+  - headphones
+  - lamp
