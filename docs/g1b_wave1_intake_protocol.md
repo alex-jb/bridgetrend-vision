@@ -84,6 +84,23 @@ A chart screenshot is supporting evidence, not a machine-readable historical
 series. Until an approved export is available, every numeric point must pass
 double entry:
 
+Before transcription, register raw screenshots in the private capture inbox
+and generate a sanitized audit. The audit computes file hashes and dimensions,
+records query-to-concept decisions, and hard-codes all screenshot rows as
+`machine_readable_points=false`, `history_eligible=false`, and
+`claim_eligible=false`:
+
+~~~bash
+PYTHONPATH=src python scripts/audit_baidu_captures.py \
+  data/g1b_baidu_capture_inbox.csv \
+  data/g1b_baidu_captures/ \
+  --output data/g1b_baidu_capture_audit.csv
+~~~
+
+The raw capture directory and working inbox are ignored by Git. The sanitized
+audit contains hashes and classifications, not account identifiers or local
+paths.
+
 1. Copy `data/g1b_baidu_double_entry.template.csv` to the ignored working file
    `data/g1b_baidu_double_entry.csv`.
 2. Preserve the original capture and calculate its SHA-256.

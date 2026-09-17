@@ -139,7 +139,7 @@ sources:
     visual_storage: none
     independence_group: baidu_index
     claim_eligible: false
-    blocker: Screenshots exist, but a frozen machine-readable export and reproducible capture log do not.
+    blocker: Fourteen screenshots have a hashed audit log, but none supplies the complete machine-readable 104-week series for a registered primary query.
     official_url: https://index.baidu.com/
 
   google_trends_web_or_alpha:

@@ -17,6 +17,8 @@ data/pilot_images/
 data/g1a_gso_inbox/
 data/g1b_trend_observations.csv
 data/g1b_baidu_double_entry.csv
+data/g1b_baidu_capture_inbox.csv
+data/g1b_baidu_captures/
 data/g1b_source_observations.csv
 data/g1b_exports/
 results/
