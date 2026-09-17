@@ -1,0 +1,182 @@
+version: 1
+checked_on: 2026-09-17
+description: >-
+  Claim-bearing source readiness for the G1B U.S.-China pilot. A source is not
+  counted merely because its website is public: access, market provenance,
+  timestamp reproducibility, and asset rights must all be established.
+
+claim_gate:
+  required_markets: [US, CN]
+  min_independence_groups_per_market: 2
+  min_timestamp_sources_per_market: 2
+  min_visual_sources_per_market: 1
+
+sources:
+  bridgetrend_owned_photos_us:
+    platform: bridgetrend_owned
+    markets: [US]
+    access_status: collection_not_started
+    evidence_roles: [visual, listing_metadata, timestamp]
+    market_label_basis: owned_capture
+    rights_status: owned
+    visual_storage: persistent
+    independence_group: bridgetrend_owned_us
+    claim_eligible: false
+    blocker: No frozen U.S. observations, receipts, or asset hashes exist yet.
+    official_url: https://github.com/alex-jb/bridgetrend-vision
+
+  bridgetrend_owned_photos_cn:
+    platform: bridgetrend_owned
+    markets: [CN]
+    access_status: collection_not_started
+    evidence_roles: [visual, listing_metadata, timestamp]
+    market_label_basis: owned_capture
+    rights_status: owned
+    visual_storage: persistent
+    independence_group: bridgetrend_owned_cn
+    claim_eligible: false
+    blocker: No frozen China-market observations, receipts, or asset hashes exist yet.
+    official_url: https://github.com/alex-jb/bridgetrend-vision
+
+  seller_permission_us:
+    platform: cooperating_seller
+    markets: [US]
+    access_status: permission_required
+    evidence_roles: [visual, listing_metadata, timestamp]
+    market_label_basis: written_permission
+    rights_status: permission_granted
+    visual_storage: persistent
+    independence_group: us_seller_partner
+    claim_eligible: false
+    blocker: Signed asset and data permission has not been obtained.
+    official_url: https://github.com/alex-jb/bridgetrend-vision
+
+  seller_permission_cn:
+    platform: cooperating_seller
+    markets: [CN]
+    access_status: permission_required
+    evidence_roles: [visual, listing_metadata, timestamp]
+    market_label_basis: written_permission
+    rights_status: permission_granted
+    visual_storage: persistent
+    independence_group: cn_seller_partner
+    claim_eligible: false
+    blocker: Signed asset and data permission has not been obtained.
+    official_url: https://github.com/alex-jb/bridgetrend-vision
+
+  tiktok_research_api_us:
+    platform: tiktok_research_api
+    markets: [US]
+    access_status: application_required
+    evidence_roles: [social_timeline, engagement, timestamp]
+    market_label_basis: approved_platform_api
+    rights_status: research_access_pending
+    visual_storage: metadata_only
+    independence_group: tiktok
+    claim_eligible: false
+    blocker: Qualifying not-for-profit researcher approval and credentials are required.
+    official_url: https://developers.tiktok.com/docs/en/research-api-codebook
+
+  tiktok_shop_research_eu:
+    platform: tiktok_shop_research_api
+    markets: [EU]
+    access_status: application_required
+    evidence_roles: [shop_metadata, engagement, timestamp]
+    market_label_basis: approved_platform_api
+    rights_status: research_access_pending
+    visual_storage: metadata_only
+    independence_group: tiktok
+    claim_eligible: false
+    blocker: Official product and review endpoints currently describe EU-purchasable products, not the U.S.-China core pair.
+    official_url: https://developers.tiktok.com/docs/en/research-api-specs-query-tiktok-shop-products
+
+  douyin_open_platform_authorized:
+    platform: douyin_open_platform
+    markets: [CN]
+    access_status: permission_required
+    evidence_roles: [authorized_creator_timeline, engagement, timestamp]
+    market_label_basis: authorized_account_api
+    rights_status: platform_restricted
+    visual_storage: ephemeral_features_only
+    independence_group: douyin
+    claim_eligible: false
+    blocker: Data permissions are closed by default and the documented capabilities require application or account authorization.
+    official_url: https://developer.open-douyin.com/docs/resource/zh-CN/developer/introduction/type-and-permission
+
+  whatnot_seller_api:
+    platform: whatnot_seller_api
+    markets: [US]
+    access_status: blocked
+    evidence_roles: [seller_inventory, sales_event, timestamp]
+    market_label_basis: authorized_account_api
+    rights_status: platform_restricted
+    visual_storage: metadata_only
+    independence_group: whatnot
+    claim_eligible: false
+    blocker: Seller API is in Developer Preview, account-scoped, and is not onboarding new applicants.
+    official_url: https://developers.whatnot.com/docs/getting-started/introduction
+
+  youtube_data_api_cc:
+    platform: youtube_data_api
+    markets: [GLOBAL]
+    access_status: credential_required
+    evidence_roles: [social_timeline, discovery, timestamp]
+    market_label_basis: unverified
+    rights_status: per_asset_license_required
+    visual_storage: metadata_only
+    independence_group: youtube
+    claim_eligible: false
+    blocker: Region targeting is not market provenance; visual reuse requires per-item license verification.
+    official_url: https://developers.google.com/youtube/v3/docs/search/list
+
+  baidu_index_manual_export:
+    platform: baidu_index
+    markets: [CN]
+    access_status: manual_export_required
+    evidence_roles: [search_interest, timestamp]
+    market_label_basis: manual_export
+    rights_status: research_output_only
+    visual_storage: none
+    independence_group: baidu_index
+    claim_eligible: false
+    blocker: Screenshots exist, but a frozen machine-readable export and reproducible capture log do not.
+    official_url: https://index.baidu.com/
+
+  google_trends_web_or_alpha:
+    platform: google_trends
+    markets: [US, GLOBAL]
+    access_status: manual_export_required
+    evidence_roles: [search_interest, timestamp]
+    market_label_basis: manual_export
+    rights_status: research_output_only
+    visual_storage: none
+    independence_group: google_trends
+    claim_eligible: false
+    blocker: Web CSV export is not frozen; the official API remains limited alpha access.
+    official_url: https://developers.google.com/search/blog/2025/07/trends-api
+
+  ebay_browse_api_us:
+    platform: ebay_browse_api
+    markets: [US]
+    access_status: terms_review_required
+    evidence_roles: [listing_metadata, visual_reference, timestamp]
+    market_label_basis: approved_platform_api
+    rights_status: terms_review_required
+    visual_storage: metadata_only
+    independence_group: ebay
+    claim_eligible: false
+    blocker: API access and image/model-use rights must be approved before any asset enters the benchmark.
+    official_url: https://developer.ebay.com/api-docs/buy/browse/resources/item_summary/methods/search
+
+  etsy_open_api_us:
+    platform: etsy_open_api
+    markets: [US]
+    access_status: terms_review_required
+    evidence_roles: [listing_metadata, visual_reference, timestamp]
+    market_label_basis: approved_platform_api
+    rights_status: terms_review_required
+    visual_storage: metadata_only
+    independence_group: etsy
+    claim_eligible: false
+    blocker: API approval and listing-image reuse terms must be resolved before benchmark ingestion.
+    official_url: https://developers.etsy.com/documentation/reference/

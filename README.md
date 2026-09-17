@@ -189,6 +189,19 @@ PYTHONPATH=src python scripts/evaluate_g1a_identity.py \
   --ks 1 5 10
 ~~~
 
+Before collecting claim-bearing U.S./China data, run the G1B source gate:
+
+~~~bash
+PYTHONPATH=src python scripts/check_g1b_source_readiness.py
+~~~
+
+The current plan deliberately returns `overall_ready: false`: platform access,
+market provenance, and visual reuse rights are not interchangeable. See
+[the dated G1B source review](docs/g1b_source_readiness_2026-09-17.md) and
+`configs/g1b_source_plan.yaml`. G1B scoring must remain blocked until both
+markets have two independent timestamped sources and one rights-cleared visual
+source.
+
 ## Repository structure
 
 ~~~text
