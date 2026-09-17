@@ -4,6 +4,43 @@ Cross-market product discovery using multimodal computer vision.
 
 BridgeTrend Vision is the COM 6005 Computer Vision component of the broader BridgeTrend project. The research goal is to build and evaluate a reproducible system that embeds product images, retrieves related products across U.S. and Chinese markets, and identifies shared visual product clusters.
 
+## OpenCV AI Competition 2026 track
+
+The branch `codex/opencv-agentic-vision` contains Alex's solo competition track:
+**BridgeTrend Visual Evidence Agent**. It extends the retrieval baseline with an
+OpenCV 5 image-quality pipeline and an auditable policy that can accept a match,
+retrieve more evidence, request human review, or reject it.
+
+- [Competition execution plan](docs/opencv_competition_plan.md)
+- [Devpost draft](docs/devpost_draft.md)
+- [Agent policy](configs/agent_policy.yaml)
+
+Run a deterministic decision trace without downloading a model:
+
+~~~bash
+python scripts/run_evidence_agent.py \
+  --top-similarity 0.91 \
+  --runner-up-similarity 0.76 \
+  --quality-score 0.82 \
+  --evidence-count 3 \
+  --source-diversity 2
+~~~
+
+The existing course baseline and the competition-period additions are disclosed
+separately so prior work and individual competition work remain attributable.
+
+Install the OpenCV 5 competition extra and inspect one image:
+
+~~~bash
+pip install -e ".[dev,opencv5]"
+python scripts/inspect_image.py data/raw/example.jpg \
+  --prepared-output results/quality/example.prepared.jpg \
+  --evidence-output results/quality/example.json
+~~~
+
+The inspection command intentionally checks the OpenCV major version and fails
+clearly rather than silently running the competition path on an older release.
+
 ## Research question
 
 Can pretrained visual representations identify exact products, close substitutes, and shared visual styles across U.S. and Chinese-market product images?

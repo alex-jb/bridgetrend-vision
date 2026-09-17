@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bridgetrend-vision"
-version = "0.1.0"
+version = "0.2.0"
 description = "Cross-market product discovery using multimodal computer vision"
 requires-python = ">=3.10"
 dependencies = [
@@ -21,6 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]
 faiss = ["faiss-cpu>=1.8"]
+opencv5 = ["opencv-python-headless>=5,<6"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -28,4 +29,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-

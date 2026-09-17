@@ -1,0 +1,20 @@
+policy_name: conservative_v0
+
+decision_thresholds:
+  accept_similarity: 0.84
+  review_similarity: 0.72
+  accept_margin: 0.08
+  min_quality_score: 0.55
+  reject_quality_score: 0.25
+  min_evidence_count: 2
+  min_source_diversity: 2
+
+actions:
+  accept: persist_match_and_emit_trace
+  retrieve_more: request_additional_cross_market_evidence
+  human_review: queue_pair_with_explanation
+  reject: persist_negative_decision_and_reason
+
+calibration:
+  status: not_yet_fitted
+  requirement: fit_thresholds_on_validation_split_only
