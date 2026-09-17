@@ -15,6 +15,7 @@ retrieve more evidence, request human review, or reject it.
 - [Devpost draft](docs/devpost_draft.md)
 - [Agent policy](configs/agent_policy.yaml)
 - [Closed-loop evidence-session protocol](docs/evidence_session_protocol.md)
+- [OpenCV retrieval evidence provider](docs/opencv_evidence_provider.md)
 
 Run a deterministic decision trace without downloading a model:
 
@@ -42,6 +43,20 @@ The session starts with insufficient independent evidence, calls a bounded
 evidence-acquisition tool, re-evaluates the changed visual state, and emits a
 SHA-256-linked decision trace. If the acquisition budget or provider is
 exhausted, it escalates to human review instead of silently accepting a match.
+
+Generate and run the 24-image, six-case OpenCV fixture pack:
+
+~~~bash
+PYTHONPATH=src python scripts/generate_demo_fixture_pack.py
+PYTHONPATH=src python scripts/run_opencv_evidence_demo.py \
+  --case exact_match \
+  --output results/demo_fixture_pack/exact_match.json
+~~~
+
+The provider uses foreground segmentation, ORB ratio matching, RANSAC geometry,
+foreground color, and silhouette overlap. Its measurements are stored in the
+same hash-linked session trace. The generated fixture pack is CC0 and contains
+no external product photography or trademarks.
 
 Install the OpenCV 5 competition extra and inspect one image:
 

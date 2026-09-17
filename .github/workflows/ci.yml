@@ -36,3 +36,15 @@ jobs:
           python scripts/run_evidence_session.py
           --scenario data/evidence_session.example.json
           --output results/evidence_sessions/ci-smoke.json
+      - name: Rebuild OpenCV demo fixture pack
+        env:
+          PYTHONPATH: src
+        run: python scripts/generate_demo_fixture_pack.py --output-dir /tmp/bridgetrend-demo-pack
+      - name: Smoke test real OpenCV evidence provider
+        env:
+          PYTHONPATH: src
+        run: >-
+          python scripts/run_opencv_evidence_demo.py
+          --pack /tmp/bridgetrend-demo-pack/cases.json
+          --case exact_match
+          --output results/evidence_sessions/opencv-provider-smoke.json

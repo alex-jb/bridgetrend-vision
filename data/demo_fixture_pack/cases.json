@@ -1,0 +1,328 @@
+{
+  "cases": [
+    {
+      "case_id": "exact_match",
+      "expected_decision": "accept",
+      "initial_evidence": {
+        "evidence_count": 1,
+        "quality_score": 0.8,
+        "runner_up_similarity": 0.7,
+        "source_diversity": 1,
+        "top_similarity": 0.94
+      },
+      "label": "L3_exact",
+      "max_acquisitions": 2,
+      "observations": [
+        {
+          "candidate_id": "exact_match-target",
+          "evidence_id": "exact_match-evidence-1",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/exact_match/evidence_1.png",
+          "market": "CN",
+          "retrieval_similarity": 0.98,
+          "source": "synthetic_cn_source_1_1"
+        },
+        {
+          "candidate_id": "exact_match-target",
+          "evidence_id": "exact_match-evidence-2",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/exact_match/evidence_2.png",
+          "market": "CN",
+          "retrieval_similarity": 0.94,
+          "source": "synthetic_cn_source_1_2"
+        },
+        {
+          "candidate_id": "exact_match-candidate-3",
+          "evidence_id": "exact_match-evidence-3",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/exact_match/evidence_3.png",
+          "market": "CN",
+          "retrieval_similarity": 0.58,
+          "source": "synthetic_cn_source_1_3"
+        }
+      ],
+      "query_image": "images/exact_match/query.png",
+      "query_source": "synthetic_us_source_1"
+    },
+    {
+      "case_id": "close_substitute",
+      "expected_decision": "human_review",
+      "initial_evidence": {
+        "evidence_count": 1,
+        "quality_score": 0.8,
+        "runner_up_similarity": 0.78,
+        "source_diversity": 1,
+        "top_similarity": 0.88
+      },
+      "label": "L2_substitute",
+      "max_acquisitions": 2,
+      "observations": [
+        {
+          "candidate_id": "close_substitute-candidate-1",
+          "evidence_id": "close_substitute-evidence-1",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/close_substitute/evidence_1.png",
+          "market": "CN",
+          "retrieval_similarity": 0.78,
+          "source": "synthetic_cn_source_2_1"
+        },
+        {
+          "candidate_id": "close_substitute-candidate-2",
+          "evidence_id": "close_substitute-evidence-2",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/close_substitute/evidence_2.png",
+          "market": "CN",
+          "retrieval_similarity": 0.76,
+          "source": "synthetic_cn_source_2_2"
+        },
+        {
+          "candidate_id": "close_substitute-candidate-3",
+          "evidence_id": "close_substitute-evidence-3",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/close_substitute/evidence_3.png",
+          "market": "CN",
+          "retrieval_similarity": 0.68,
+          "source": "synthetic_cn_source_2_3"
+        }
+      ],
+      "query_image": "images/close_substitute/query.png",
+      "query_source": "synthetic_us_source_2"
+    },
+    {
+      "case_id": "visual_style",
+      "expected_decision": "human_review",
+      "initial_evidence": {
+        "evidence_count": 1,
+        "quality_score": 0.8,
+        "runner_up_similarity": 0.77,
+        "source_diversity": 1,
+        "top_similarity": 0.86
+      },
+      "label": "L1_style",
+      "max_acquisitions": 2,
+      "observations": [
+        {
+          "candidate_id": "visual_style-candidate-1",
+          "evidence_id": "visual_style-evidence-1",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/visual_style/evidence_1.png",
+          "market": "CN",
+          "retrieval_similarity": 0.88,
+          "source": "synthetic_cn_source_3_1"
+        },
+        {
+          "candidate_id": "visual_style-candidate-2",
+          "evidence_id": "visual_style-evidence-2",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/visual_style/evidence_2.png",
+          "market": "CN",
+          "retrieval_similarity": 0.86,
+          "source": "synthetic_cn_source_3_2"
+        },
+        {
+          "candidate_id": "visual_style-candidate-3",
+          "evidence_id": "visual_style-evidence-3",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/visual_style/evidence_3.png",
+          "market": "CN",
+          "retrieval_similarity": 0.6,
+          "source": "synthetic_cn_source_3_3"
+        }
+      ],
+      "query_image": "images/visual_style/query.png",
+      "query_source": "synthetic_us_source_3"
+    },
+    {
+      "case_id": "low_quality_recovery",
+      "expected_decision": "accept",
+      "initial_evidence": {
+        "evidence_count": 1,
+        "quality_score": 0.4,
+        "runner_up_similarity": 0.7,
+        "source_diversity": 1,
+        "top_similarity": 0.91
+      },
+      "label": "L3_after_better_image",
+      "max_acquisitions": 2,
+      "observations": [
+        {
+          "candidate_id": "low_quality_recovery-target",
+          "evidence_id": "low_quality_recovery-evidence-1",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/low_quality_recovery/evidence_1.png",
+          "market": "CN",
+          "retrieval_similarity": 0.95,
+          "source": "synthetic_cn_source_4_1"
+        },
+        {
+          "candidate_id": "low_quality_recovery-target",
+          "evidence_id": "low_quality_recovery-evidence-2",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source",
+            "higher_quality_image"
+          ],
+          "image_path": "images/low_quality_recovery/evidence_2.png",
+          "market": "CN",
+          "query_image_path": "images/low_quality_recovery/evidence_1.png",
+          "retrieval_similarity": 0.97,
+          "source": "synthetic_cn_source_4_2"
+        },
+        {
+          "candidate_id": "low_quality_recovery-candidate-3",
+          "evidence_id": "low_quality_recovery-evidence-3",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/low_quality_recovery/evidence_3.png",
+          "market": "CN",
+          "retrieval_similarity": 0.58,
+          "source": "synthetic_cn_source_4_3"
+        }
+      ],
+      "query_image": "images/low_quality_recovery/query.png",
+      "query_source": "synthetic_us_source_4"
+    },
+    {
+      "case_id": "ambiguous_candidates",
+      "expected_decision": "human_review",
+      "initial_evidence": {
+        "evidence_count": 1,
+        "quality_score": 0.8,
+        "runner_up_similarity": 0.89,
+        "source_diversity": 1,
+        "top_similarity": 0.91
+      },
+      "label": "L2_ambiguous",
+      "max_acquisitions": 2,
+      "observations": [
+        {
+          "candidate_id": "ambiguous_candidates-candidate-1",
+          "evidence_id": "ambiguous_candidates-evidence-1",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/ambiguous_candidates/evidence_1.png",
+          "market": "CN",
+          "retrieval_similarity": 0.94,
+          "source": "synthetic_cn_source_5_1"
+        },
+        {
+          "candidate_id": "ambiguous_candidates-candidate-2",
+          "evidence_id": "ambiguous_candidates-evidence-2",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/ambiguous_candidates/evidence_2.png",
+          "market": "CN",
+          "retrieval_similarity": 0.93,
+          "source": "synthetic_cn_source_5_2"
+        },
+        {
+          "candidate_id": "ambiguous_candidates-candidate-3",
+          "evidence_id": "ambiguous_candidates-evidence-3",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/ambiguous_candidates/evidence_3.png",
+          "market": "CN",
+          "retrieval_similarity": 0.91,
+          "source": "synthetic_cn_source_5_3"
+        }
+      ],
+      "query_image": "images/ambiguous_candidates/query.png",
+      "query_source": "synthetic_us_source_5"
+    },
+    {
+      "case_id": "unsupported_match",
+      "expected_decision": "reject",
+      "initial_evidence": {
+        "evidence_count": 1,
+        "quality_score": 0.8,
+        "runner_up_similarity": 0.56,
+        "source_diversity": 1,
+        "top_similarity": 0.66
+      },
+      "label": "L0_unsupported",
+      "max_acquisitions": 2,
+      "observations": [
+        {
+          "candidate_id": "unsupported_match-candidate-1",
+          "evidence_id": "unsupported_match-evidence-1",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/unsupported_match/evidence_1.png",
+          "market": "CN",
+          "retrieval_similarity": 0.58,
+          "source": "synthetic_cn_source_6_1"
+        },
+        {
+          "candidate_id": "unsupported_match-candidate-2",
+          "evidence_id": "unsupported_match-evidence-2",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/unsupported_match/evidence_2.png",
+          "market": "CN",
+          "retrieval_similarity": 0.53,
+          "source": "synthetic_cn_source_6_2"
+        },
+        {
+          "candidate_id": "unsupported_match-candidate-3",
+          "evidence_id": "unsupported_match-evidence-3",
+          "evidence_roles": [
+            "additional_product_image",
+            "independent_marketplace_source"
+          ],
+          "image_path": "images/unsupported_match/evidence_3.png",
+          "market": "CN",
+          "retrieval_similarity": 0.49,
+          "source": "synthetic_cn_source_6_3"
+        }
+      ],
+      "query_image": "images/unsupported_match/query.png",
+      "query_source": "synthetic_us_source_6"
+    }
+  ],
+  "image_count": 24,
+  "license": "CC0-1.0",
+  "pack_version": "1.0.0",
+  "provenance": "Deterministically generated by BridgeTrend; no external images."
+}
