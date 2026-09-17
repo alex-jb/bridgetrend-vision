@@ -1,0 +1,7 @@
+image_id,image_path,market,category,product_id,title,source,timestamp
+us_tshirt_001,raw/us/t_shirt/us_tshirt_001.jpg,US,t_shirt,us_p001,Example graphic T-shirt,approved_dataset,2026-09-01
+cn_tshirt_001,raw/cn/t_shirt/cn_tshirt_001.jpg,CN,t_shirt,cn_p001,示例印花T恤,approved_dataset,2026-09-01
+us_sneaker_001,raw/us/sneakers/us_sneaker_001.jpg,US,sneakers,us_p002,Example running sneaker,approved_dataset,2026-09-02
+cn_sneaker_001,raw/cn/sneakers/cn_sneaker_001.jpg,CN,sneakers,cn_p002,示例运动鞋,approved_dataset,2026-09-02
+us_bag_001,raw/us/handbag/us_bag_001.jpg,US,handbag,us_p003,Example shoulder bag,approved_dataset,2026-09-03
+cn_bag_001,raw/cn/handbag/cn_bag_001.jpg,CN,handbag,cn_p003,示例单肩包,approved_dataset,2026-09-03
