@@ -1,0 +1,539 @@
+{
+  "failures": [
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "exact_match",
+      "expectation_met": false,
+      "expected_decision": "accept",
+      "latency_ms": 27.820557999802986,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 25.857136999547947,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "visual_style",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 29.593814000691054,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 32.99429399885412,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "visual_style",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 28.516872000182047,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 35.287366999909864,
+      "perturbation": "rotation_8deg",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "exact_match",
+      "expectation_met": false,
+      "expected_decision": "accept",
+      "latency_ms": 25.180517999615404,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 24.720905999856768,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "visual_style",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 48.24895599995216,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "low_quality_recovery",
+      "expectation_met": false,
+      "expected_decision": "accept",
+      "latency_ms": 26.720230998762418,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    }
+  ],
+  "fixture_boundary": {
+    "claim_eligible": false,
+    "note": "Controlled fixture perturbations measure workflow stability; they do not establish real-market validity."
+  },
+  "generated_at": "2026-09-23T18:38:15.040669+00:00",
+  "opencv_version": "5.0.0",
+  "overall": {
+    "conservative_fallback_count": 10,
+    "expected_action_retention_rate": 0.6666666666666666,
+    "latency_ms": {
+      "max": 138.724682999964,
+      "p50": 27.513523499692383,
+      "p95": 49.84524080009577
+    },
+    "mean_acquisitions": 1.0333333333333334,
+    "perturbation": "all",
+    "trace_valid_rate": 1.0,
+    "trial_count": 30,
+    "unsafe_accept_count": 0
+  },
+  "per_perturbation": [
+    {
+      "conservative_fallback_count": 0,
+      "expected_action_retention_rate": 1.0,
+      "latency_ms": {
+        "max": 138.724682999964,
+        "p50": 27.02421200046956,
+        "p95": 111.81314724990443
+      },
+      "mean_acquisitions": 1.0,
+      "perturbation": "original",
+      "trace_valid_rate": 1.0,
+      "trial_count": 6,
+      "unsafe_accept_count": 0
+    },
+    {
+      "conservative_fallback_count": 3,
+      "expected_action_retention_rate": 0.5,
+      "latency_ms": {
+        "max": 29.593814000691054,
+        "p50": 25.78997549971973,
+        "p95": 29.150500000469037
+      },
+      "mean_acquisitions": 1.0,
+      "perturbation": "low_light_55pct",
+      "trace_valid_rate": 1.0,
+      "trial_count": 6,
+      "unsafe_accept_count": 0
+    },
+    {
+      "conservative_fallback_count": 2,
+      "expected_action_retention_rate": 0.6666666666666666,
+      "latency_ms": {
+        "max": 51.15129200021329,
+        "p50": 29.856599499908043,
+        "p95": 46.612042499873496
+      },
+      "mean_acquisitions": 1.1666666666666667,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid_rate": 1.0,
+      "trial_count": 6,
+      "unsafe_accept_count": 0
+    },
+    {
+      "conservative_fallback_count": 1,
+      "expected_action_retention_rate": 0.8333333333333334,
+      "latency_ms": {
+        "max": 35.287366999909864,
+        "p50": 28.106043999287067,
+        "p95": 34.65618425025241
+      },
+      "mean_acquisitions": 1.0,
+      "perturbation": "rotation_8deg",
+      "trace_valid_rate": 1.0,
+      "trial_count": 6,
+      "unsafe_accept_count": 0
+    },
+    {
+      "conservative_fallback_count": 4,
+      "expected_action_retention_rate": 0.3333333333333333,
+      "latency_ms": {
+        "max": 48.24895599995216,
+        "p50": 25.95037449918891,
+        "p95": 43.524391499886406
+      },
+      "mean_acquisitions": 1.0,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid_rate": 1.0,
+      "trial_count": 6,
+      "unsafe_accept_count": 0
+    }
+  ],
+  "schema_version": "bridgetrend.robustness.v1",
+  "trials": [
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "accept",
+      "case_id": "exact_match",
+      "expectation_met": true,
+      "expected_decision": "accept",
+      "latency_ms": 138.724682999964,
+      "perturbation": "original",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "close_substitute",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 26.99309800118499,
+      "perturbation": "original",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "visual_style",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 31.078539999725763,
+      "perturbation": "original",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "accept",
+      "case_id": "low_quality_recovery",
+      "expectation_met": true,
+      "expected_decision": "accept",
+      "latency_ms": 26.785113999721943,
+      "perturbation": "original",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "ambiguous_candidates",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 25.40660900012881,
+      "perturbation": "original",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "unsupported_match",
+      "expectation_met": true,
+      "expected_decision": "reject",
+      "latency_ms": 27.05532599975413,
+      "perturbation": "original",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "exact_match",
+      "expectation_met": false,
+      "expected_decision": "accept",
+      "latency_ms": 27.820557999802986,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 25.857136999547947,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "visual_style",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 29.593814000691054,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "accept",
+      "case_id": "low_quality_recovery",
+      "expectation_met": true,
+      "expected_decision": "accept",
+      "latency_ms": 25.722813999891514,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "ambiguous_candidates",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 25.344354999106145,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "unsupported_match",
+      "expectation_met": true,
+      "expected_decision": "reject",
+      "latency_ms": 23.564814000565093,
+      "perturbation": "low_light_55pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "accept",
+      "case_id": "exact_match",
+      "expectation_met": true,
+      "expected_decision": "accept",
+      "latency_ms": 31.19632699963404,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 32.99429399885412,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "visual_style",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 28.516872000182047,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 2,
+      "actual_decision": "accept",
+      "case_id": "low_quality_recovery",
+      "expectation_met": true,
+      "expected_decision": "accept",
+      "latency_ms": 51.15129200021329,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "ambiguous_candidates",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 28.334802000244963,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "unsupported_match",
+      "expectation_met": true,
+      "expected_decision": "reject",
+      "latency_ms": 28.053734999048174,
+      "perturbation": "gaussian_blur_9px",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "accept",
+      "case_id": "exact_match",
+      "expectation_met": true,
+      "expected_decision": "accept",
+      "latency_ms": 32.76263600128004,
+      "perturbation": "rotation_8deg",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 35.287366999909864,
+      "perturbation": "rotation_8deg",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "visual_style",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 29.005598998992355,
+      "perturbation": "rotation_8deg",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "accept",
+      "case_id": "low_quality_recovery",
+      "expectation_met": true,
+      "expected_decision": "accept",
+      "latency_ms": 26.304940000045463,
+      "perturbation": "rotation_8deg",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "ambiguous_candidates",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 24.90590500019607,
+      "perturbation": "rotation_8deg",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "unsupported_match",
+      "expectation_met": true,
+      "expected_decision": "reject",
+      "latency_ms": 27.20648899958178,
+      "perturbation": "rotation_8deg",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "exact_match",
+      "expectation_met": false,
+      "expected_decision": "accept",
+      "latency_ms": 25.180517999615404,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "close_substitute",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 24.720905999856768,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "visual_style",
+      "expectation_met": false,
+      "expected_decision": "human_review",
+      "latency_ms": 48.24895599995216,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "low_quality_recovery",
+      "expectation_met": false,
+      "expected_decision": "accept",
+      "latency_ms": 26.720230998762418,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "human_review",
+      "case_id": "ambiguous_candidates",
+      "expectation_met": true,
+      "expected_decision": "human_review",
+      "latency_ms": 29.350697999689146,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    },
+    {
+      "acquisitions_used": 1,
+      "actual_decision": "reject",
+      "case_id": "unsupported_match",
+      "expectation_met": true,
+      "expected_decision": "reject",
+      "latency_ms": 25.014748000103282,
+      "perturbation": "center_occlusion_9pct",
+      "trace_valid": true,
+      "unsafe_accept": false
+    }
+  ]
+}

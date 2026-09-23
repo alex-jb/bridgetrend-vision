@@ -54,3 +54,7 @@ jobs:
         env:
           PYTHONPATH: src
         run: python scripts/run_competition_suite.py --output results/judge-console/ci-suite.json
+      - name: Run robustness matrix
+        env:
+          PYTHONPATH: src
+        run: python scripts/run_robustness_benchmark.py --output results/judge-console/ci-robustness.json

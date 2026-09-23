@@ -7,7 +7,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, HTTPException
 from fastapi import Path as ApiPath
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -88,6 +88,17 @@ def create_app(runtime: CompetitionRuntime | None = None) -> FastAPI:
                 _decorate_case(item) for item in runtime.failure_gallery()
             ]
         }
+
+    @application.get("/api/v1/export")
+    def export() -> JSONResponse:
+        return JSONResponse(
+            runtime.export_snapshot(),
+            headers={
+                "Content-Disposition": (
+                    'attachment; filename="bridgetrend-judge-results.json"'
+                )
+            },
+        )
 
     @application.get("/api/v1/sessions/{session_id}")
     def session(

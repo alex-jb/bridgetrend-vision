@@ -12,6 +12,7 @@ measurements change a later agent action. Every run preserves:
 - a SHA-256-linked decision trace;
 - latency, acquisition count, expected-action success, and trace validity;
 - an optional human decision that never overwrites the model trace.
+- a downloadable JSON snapshot of recent sessions and runtime metrics.
 
 ## Local run
 
@@ -31,6 +32,13 @@ Run the same six-case suite without a browser:
 ~~~bash
 PYTHONPATH=src python scripts/run_competition_suite.py \
   --output results/judge-console/suite.json
+~~~
+
+Run the 30-trial controlled robustness matrix:
+
+~~~bash
+PYTHONPATH=src python scripts/run_robustness_benchmark.py \
+  --output results/judge-console/robustness.json
 ~~~
 
 ## Demonstration sequence
@@ -53,3 +61,8 @@ PYTHONPATH=src python scripts/run_competition_suite.py \
 
 The AWS mode is selected through environment variables and uses the same agent
 and OpenCV code path. See `deploy/aws/README.md`.
+
+The current report, architecture source, and judge video script are in
+[`competition_technical_report.md`](competition_technical_report.md),
+[`competition_architecture.md`](competition_architecture.md), and
+[`demo_video_script.md`](demo_video_script.md).

@@ -49,6 +49,9 @@ of the evidence, policy version, confidence, and reasons.
 - Human review that preserves the original model decision and SHA-256 trace.
 - Runtime evaluation of expected safe action, trace validity, acquisition use,
   review rate, and p50/p95 latency.
+- A 30-trial controlled perturbation matrix with 66.7% exact-action retention,
+  30/30 valid traces, and zero unsafe accepts on ambiguous or unsupported cases.
+- A downloadable judge-results snapshot for reproducibility.
 - An AWS App Runner deployment contract with DynamoDB trace storage and
   CloudWatch operational metrics.
 

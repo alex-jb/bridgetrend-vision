@@ -46,3 +46,15 @@ def test_fixture_assets_are_resolved_only_from_the_manifest() -> None:
         pass
     else:
         raise AssertionError("unlisted fixture asset should fail")
+
+
+def test_export_snapshot_contains_metrics_and_recent_sessions() -> None:
+    runtime = CompetitionRuntime()
+    record = runtime.run_case("exact_match")
+
+    export = runtime.export_snapshot()
+
+    assert export["schema_version"] == "bridgetrend.judge-export.v1"
+    assert export["metrics"]["run_count"] == 1
+    assert export["sessions"][0]["session_id"] == record["session_id"]
+    assert export["fixture_boundary"]["claim_eligible"] is False

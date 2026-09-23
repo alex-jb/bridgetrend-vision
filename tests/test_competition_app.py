@@ -35,6 +35,12 @@ def test_judge_console_api_runs_and_reviews_a_case() -> None:
     assert reviewed.json()["human_review"]["decision"] == "request_more_evidence"
     assert reviewed.json()["session"]["final_trace"]["decision"] == "human_review"
 
+    exported = client.get("/api/v1/export")
+    assert exported.status_code == 200
+    assert "attachment" in exported.headers["content-disposition"]
+    assert exported.json()["sessions"][0]["session_id"] == record["session_id"]
+    assert exported.json()["fixture_boundary"]["claim_eligible"] is False
+
 
 def test_judge_console_serves_ui_and_allowlisted_fixture() -> None:
     client = TestClient(create_app(CompetitionRuntime()))

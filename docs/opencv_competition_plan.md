@@ -96,6 +96,8 @@ listing must remain in one split to prevent leakage.
 - OpenCV evidence loop and SHA-256 trace: complete.
 - Six-case CC0 fixture pack with success, failure, ambiguity, and recovery: complete.
 - Responsive Judge Console, API, metrics, failure gallery, and human review: implemented.
+- Controlled 30-trial robustness matrix and downloadable result export: implemented.
+- Technical report, architecture source/vector, and sub-five-minute video script: drafted.
 - AWS App Runner, DynamoDB, CloudWatch infrastructure contract: implemented;
   live deployment and endpoint verification remain pending.
 - Cross-market G1B data claim: blocked until the frozen source gates pass.

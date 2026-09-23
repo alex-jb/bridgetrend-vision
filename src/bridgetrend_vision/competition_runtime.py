@@ -23,9 +23,21 @@ from .telemetry import (
 )
 from .trace_store import DynamoDBTraceStore, InMemoryTraceStore, TraceStore
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_PACK_PATH = REPOSITORY_ROOT / "data/demo_fixture_pack/cases.json"
-DEFAULT_POLICY_PATH = REPOSITORY_ROOT / "configs/agent_policy.yaml"
+SOURCE_REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _default_project_file(relative_path: str) -> Path:
+    """Resolve source-layout and installed-container project assets."""
+
+    candidates = (
+        Path.cwd() / relative_path,
+        SOURCE_REPOSITORY_ROOT / relative_path,
+    )
+    return next((path for path in candidates if path.is_file()), candidates[0])
+
+
+DEFAULT_PACK_PATH = _default_project_file("data/demo_fixture_pack/cases.json")
+DEFAULT_POLICY_PATH = _default_project_file("configs/agent_policy.yaml")
 
 CASE_PRESENTATION: dict[str, dict[str, str]] = {
     "exact_match": {
@@ -284,6 +296,20 @@ class CompetitionRuntime:
 
     def metrics(self) -> dict[str, Any]:
         return self.metrics_sink.snapshot()
+
+    def export_snapshot(self, limit: int = 100) -> dict[str, Any]:
+        return {
+            "schema_version": "bridgetrend.judge-export.v1",
+            "generated_at": datetime.now(UTC).isoformat(),
+            "fixture_boundary": {
+                "pack_version": self.pack["pack_version"],
+                "license": self.pack["license"],
+                "provenance": self.pack["provenance"],
+                "claim_eligible": False,
+            },
+            "metrics": self.metrics(),
+            "sessions": self.trace_store.list_recent(limit=limit),
+        }
 
     def failure_gallery(self) -> list[dict[str, Any]]:
         return [

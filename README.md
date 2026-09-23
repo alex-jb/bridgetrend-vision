@@ -22,6 +22,9 @@ retrieve more evidence, request human review, or reject it.
 - [G1B 40-concept sampling protocol](docs/g1b_concept_sampling_protocol.md)
 - [G1B Wave 1 trend-intake protocol](docs/g1b_wave1_intake_protocol.md)
 - [Competition Judge Console](docs/judge_console.md)
+- [Competition technical report](docs/competition_technical_report.md)
+- [Competition architecture](docs/competition_architecture.md)
+- [Judge video script](docs/demo_video_script.md)
 - [AWS App Runner deployment](deploy/aws/README.md)
 - [Solo execution roadmap](docs/solo_execution_roadmap.md)
 
