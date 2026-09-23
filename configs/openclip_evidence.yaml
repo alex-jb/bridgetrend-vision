@@ -1,0 +1,25 @@
+version: 1
+status: provisional_research_baseline
+
+encoder:
+  implementation: open_clip
+  model: ViT-B-32
+  pretrained: laion2b_s34b_b79k
+  model_id: open_clip:ViT-B-32:laion2b_s34b_b79k
+  software_license: MIT
+  checkpoint_card: https://huggingface.co/laion/CLIP-ViT-B-32-laion2B-s34B-b79K
+  deployment_gate: research_only_until_model_and_domain_review
+
+retrieval_calibration:
+  method: clipped_affine
+  calibration_id: cosine-unit-interval-v1
+  lower_cosine: -1.0
+  upper_cosine: 1.0
+  interpretation: bounded_engineering_score_not_probability
+  replacement_gate: fit_on_frozen_validation_split_before_reporting_accuracy
+
+opencv_fusion:
+  retrieval: 0.55
+  local_geometry: 0.25
+  foreground_color: 0.10
+  silhouette_overlap: 0.10

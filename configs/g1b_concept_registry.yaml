@@ -1,0 +1,1017 @@
+version: 1
+frozen_on: 2026-09-17
+status: seed_sampling_frame
+description: >-
+  Pre-registered 40-concept G1B acquisition frame. Entries are candidates and
+  controls, not observed trend outcomes. Every transfer label remains unassigned
+  until timestamped U.S. and China evidence passes the source-readiness gate.
+
+design:
+  required_markets: [US, CN]
+  target_concept_count: 40
+  category_quotas:
+    collectibles_hobbies: 5
+    personal_tech: 5
+    fashion_accessories: 5
+    beauty_tools: 5
+    home_decor_organization: 5
+    kitchen_drinkware: 5
+    fitness_outdoor: 5
+    pet_lifestyle: 5
+  sampling_role_quotas:
+    emerging_candidate: 8
+    mature_anchor: 8
+    stable_control: 8
+    ambiguity_probe: 8
+    seasonal_control: 8
+  acquisition_targets:
+    visual_assets_per_concept_market: 5
+    query_anchors_per_concept_market: 2
+    timestamp_sources_per_concept_market: 2
+    history_weeks: 104
+    prospective_snapshot_weeks: 12
+    wave_count: 4
+    concepts_per_wave: 10
+
+research_seeds:
+  internal_vocabulary_review:
+    source_type: internal_protocol
+    url: https://github.com/alex-jb/bridgetrend-vision
+    use: Bilingual query and product-boundary design; not popularity evidence.
+  user_observed_baidu_2026_09_17:
+    source_type: user_observation
+    url: https://index.baidu.com/
+    use: Candidate discovery only; screenshots are not machine-readable labels.
+  pinterest_predicts_2026:
+    source_type: platform_forecast
+    url: https://business.pinterest.com/en-gb/pinterest-predicts/
+    use: Style and seasonality candidate discovery; not China-market evidence.
+  tiktok_next_2026:
+    source_type: platform_forecast
+    url: https://newsroom.tiktok.com/
+    use: Social-commerce candidate discovery; not a product-level outcome label.
+  visual_benchmark_design:
+    source_type: benchmark_protocol
+    url: https://github.com/alex-jb/bridgetrend-vision/blob/codex/opencv-agentic-vision/docs/annotation_protocol.md
+    use: Adds stable controls and hard visual boundaries to prevent a positive-only benchmark.
+
+concepts:
+  - concept_id: BT-C001
+    slug: blind_box_collectible_figure
+    name_en: Blind-box collectible figure
+    name_zh: 盲盒潮玩手办
+    category_group: collectibles_hobbies
+    taxonomy_category: collectible_figure
+    sampling_role: mature_anchor
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [blind box collectible, blind box figure, designer toy blind box]
+        exclude: [subscription box, cardboard gift box]
+      CN:
+        include: [盲盒手办, 潮玩盲盒, 盲盒公仔]
+        exclude: [订阅盒, 礼品包装盒]
+    boundary:
+      include: Sealed randomized collectible figures sold as a series.
+      exclude: Open-box fixed figures, capsule toys, and trading cards.
+    selection_reasons: [user_observed_signal, mature_cross_market_anchor]
+    risk_flags: [brand_confusion, child_safety]
+    research_seed_refs: [user_observed_baidu_2026_09_17, visual_benchmark_design]
+
+  - concept_id: BT-C002
+    slug: plush_bag_charm
+    name_en: Plush bag charm
+    name_zh: 毛绒包挂
+    category_group: collectibles_hobbies
+    taxonomy_category: plush_toy
+    sampling_role: emerging_candidate
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [plush bag charm, plush purse charm, stuffed animal bag charm]
+        exclude: [full size plush toy, pom pom only]
+      CN:
+        include: [毛绒包挂, 毛绒挂件, 玩偶包挂]
+        exclude: [大型毛绒玩具, 纯毛球挂件]
+    boundary:
+      include: Small stuffed characters with hardware intended for bags.
+      exclude: Full-size plush toys and non-plush metal keychains.
+    selection_reasons: [user_observed_signal, portable_collectible_form]
+    risk_flags: [brand_confusion, child_safety]
+    research_seed_refs: [user_observed_baidu_2026_09_17, tiktok_next_2026]
+
+  - concept_id: BT-C003
+    slug: trading_card_display_case
+    name_en: Trading-card display case
+    name_zh: 集换式卡牌展示盒
+    category_group: collectibles_hobbies
+    taxonomy_category: collectible_figure
+    sampling_role: stable_control
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [trading card display case, graded card display, card slab holder]
+        exclude: [card storage box, greeting card frame]
+      CN:
+        include: [卡牌展示盒, 评级卡展示架, 卡砖展示架]
+        exclude: [卡牌收纳盒, 贺卡相框]
+    boundary:
+      include: Rigid display stands or cases presenting one or a few collectible cards.
+      exclude: Bulk storage boxes, binders, and the cards themselves.
+    selection_reasons: [stable_hobby_control, rigid_shape_retrieval_test]
+    risk_flags: [brand_confusion]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C004
+    slug: capsule_toy_figure
+    name_en: Capsule-toy figure
+    name_zh: 扭蛋公仔
+    category_group: collectibles_hobbies
+    taxonomy_category: collectible_figure
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [capsule toy figure, gashapon figure, vending capsule toy]
+        exclude: [blind box figure, medicine capsule]
+      CN:
+        include: [扭蛋公仔, 扭蛋玩具, 扭蛋机玩具]
+        exclude: [盲盒手办, 药用胶囊]
+    boundary:
+      include: Small randomized toys distributed in plastic vending capsules.
+      exclude: Cardboard blind boxes and ordinary fixed mini figures.
+    selection_reasons: [near_neighbor_to_blind_box, packaging_disambiguation]
+    risk_flags: [child_safety]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C005
+    slug: collectible_advent_calendar
+    name_en: Collectible advent calendar
+    name_zh: 收藏玩具圣诞倒数日历
+    category_group: collectibles_hobbies
+    taxonomy_category: collectible_figure
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [collectible advent calendar, toy advent calendar, figure advent calendar]
+        exclude: [chocolate advent calendar, paper calendar]
+      CN:
+        include: [玩具圣诞倒数日历, 手办降临历, 公仔圣诞日历]
+        exclude: [巧克力倒数日历, 纸质日历]
+    boundary:
+      include: Multi-door holiday calendars containing small collectible toys.
+      exclude: Food-filled calendars and flat printed calendars.
+    selection_reasons: [known_calendar_seasonality, event_spike_control]
+    risk_flags: [brand_confusion, child_safety]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C006
+    slug: magnetic_phone_grip_stand
+    name_en: Magnetic phone grip stand
+    name_zh: 磁吸手机支架握把
+    category_group: personal_tech
+    taxonomy_category: phone_accessory
+    sampling_role: mature_anchor
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [magnetic phone grip stand, magsafe grip stand, magnetic phone ring grip]
+        exclude: [car phone mount, magnetic battery pack]
+      CN:
+        include: [磁吸手机支架, 磁吸手机握把, 磁吸指环支架]
+        exclude: [车载手机支架, 磁吸充电宝]
+    boundary:
+      include: Rear-mounted magnetic grips that also prop a phone upright.
+      exclude: Vehicle mounts, chargers, wallets, and adhesive-only rings.
+    selection_reasons: [mature_accessory_anchor, clear_functional_form]
+    risk_flags: [brand_confusion]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C007
+    slug: clip_on_open_ear_earbuds
+    name_en: Clip-on open-ear earbuds
+    name_zh: 耳夹式开放耳机
+    category_group: personal_tech
+    taxonomy_category: headphones
+    sampling_role: emerging_candidate
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [clip on open ear earbuds, ear clip headphones, open ear clip earbuds]
+        exclude: [ear cuff jewelry, bone conduction headband]
+      CN:
+        include: [耳夹式耳机, 开放式耳夹耳机, 耳夹蓝牙耳机]
+        exclude: [耳骨夹饰品, 骨传导挂脖耳机]
+    boundary:
+      include: Wireless audio devices that clip around the outer ear without sealing the canal.
+      exclude: Jewelry ear cuffs and neckband bone-conduction headsets.
+    selection_reasons: [emerging_form_factor, strong_visual_silhouette]
+    risk_flags: [electrical_safety, brand_confusion]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C008
+    slug: mini_thermal_label_printer
+    name_en: Mini thermal label printer
+    name_zh: 便携热敏标签机
+    category_group: personal_tech
+    taxonomy_category: small_appliance
+    sampling_role: stable_control
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [mini thermal label printer, portable bluetooth label maker, pocket label printer]
+        exclude: [photo printer, shipping label printer]
+      CN:
+        include: [便携热敏标签机, 迷你标签打印机, 蓝牙标签机]
+        exclude: [照片打印机, 快递面单打印机]
+    boundary:
+      include: Handheld or palm-size thermal printers for narrow adhesive labels.
+      exclude: Photo printers and full-size shipping-label machines.
+    selection_reasons: [stable_utility_control, compact_device_retrieval]
+    risk_flags: [electrical_safety]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C009
+    slug: magnetic_phone_wallet
+    name_en: Magnetic phone wallet
+    name_zh: 磁吸手机卡包
+    category_group: personal_tech
+    taxonomy_category: phone_accessory
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [magnetic phone wallet, magsafe card holder, magnetic phone card wallet]
+        exclude: [phone grip stand, magnetic battery pack]
+      CN:
+        include: [磁吸手机卡包, 磁吸卡套, 手机背贴卡包]
+        exclude: [磁吸手机支架, 磁吸充电宝]
+    boundary:
+      include: Flat magnetic card holders that attach to a phone back.
+      exclude: Grip-only stands, batteries, and ordinary standalone wallets.
+    selection_reasons: [near_neighbor_to_phone_grip, function_over_shape_test]
+    risk_flags: [brand_confusion]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C010
+    slug: wearable_neck_fan
+    name_en: Wearable neck fan
+    name_zh: 挂脖风扇
+    category_group: personal_tech
+    taxonomy_category: small_appliance
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [wearable neck fan, bladeless neck fan, personal neck fan]
+        exclude: [neck air conditioner, handheld fan]
+      CN:
+        include: [挂脖风扇, 颈挂式风扇, 无叶挂脖风扇]
+        exclude: [挂脖空调, 手持小风扇]
+    boundary:
+      include: U-shaped wearable fans directing airflow toward the face or neck.
+      exclude: Handheld fans and active cooling devices marketed as air conditioners.
+    selection_reasons: [summer_seasonality, wearable_electronics_shape]
+    risk_flags: [electrical_safety]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C011
+    slug: sculptural_novelty_handbag
+    name_en: Sculptural novelty handbag
+    name_zh: 雕塑感异形手提包
+    category_group: fashion_accessories
+    taxonomy_category: handbag
+    sampling_role: emerging_candidate
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [sculptural handbag, novelty shaped purse, geometric statement bag]
+        exclude: [handbag sculpture decor, ordinary box bag]
+      CN:
+        include: [异形包, 雕塑感手提包, 几何造型包]
+        exclude: [包包摆件, 普通方盒包]
+    boundary:
+      include: Functional handbags whose rigid or unusual silhouette is the primary design feature.
+      exclude: Decorative sculptures and conventional rectangular bags with only printed novelty graphics.
+    selection_reasons: [style_transfer_candidate, silhouette_sensitive_retrieval]
+    risk_flags: [brand_confusion]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C012
+    slug: crescent_shoulder_bag
+    name_en: Crescent shoulder bag
+    name_zh: 月牙腋下包
+    category_group: fashion_accessories
+    taxonomy_category: handbag
+    sampling_role: mature_anchor
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [crescent shoulder bag, half moon shoulder bag, crescent hobo bag]
+        exclude: [round moon purse, belt bag]
+      CN:
+        include: [月牙包, 月牙腋下包, 半月单肩包]
+        exclude: [圆形月亮包, 腰包]
+    boundary:
+      include: Shoulder or underarm bags with a curved crescent body.
+      exclude: Circular bags, belt bags, and rectangular baguette bags.
+    selection_reasons: [mature_style_anchor, bilingual_shape_term]
+    risk_flags: [brand_confusion]
+    research_seed_refs: [pinterest_predicts_2026, internal_vocabulary_review]
+
+  - concept_id: BT-C013
+    slug: tote_organizer_insert
+    name_en: Tote organizer insert
+    name_zh: 托特包内胆收纳
+    category_group: fashion_accessories
+    taxonomy_category: handbag
+    sampling_role: stable_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [tote organizer insert, purse organizer insert, felt bag organizer]
+        exclude: [standalone tote bag, drawer organizer]
+      CN:
+        include: [包中包, 托特包内胆, 毛毡包包收纳]
+        exclude: [独立托特包, 抽屉收纳盒]
+    boundary:
+      include: Removable compartment inserts sized for handbags or totes.
+      exclude: Standalone bags and household drawer dividers.
+    selection_reasons: [stable_utility_control, interior_object_challenge]
+    risk_flags: [none]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C014
+    slug: decorative_bag_charm_chain
+    name_en: Decorative bag-charm chain
+    name_zh: 装饰包挂链
+    category_group: fashion_accessories
+    taxonomy_category: jewelry
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [bag charm chain, purse charm chain, decorative bag chain]
+        exclude: [replacement bag strap, necklace chain]
+      CN:
+        include: [包挂链, 包包挂链, 装饰包链]
+        exclude: [包包替换肩带, 项链链条]
+    boundary:
+      include: Short decorative chains carrying charms and intended to hang from a bag.
+      exclude: Load-bearing straps, plain replacement chains, and necklaces.
+    selection_reasons: [near_neighbor_to_jewelry, accessory_context_test]
+    risk_flags: [brand_confusion, child_safety]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C015
+    slug: woven_beach_tote
+    name_en: Woven beach tote
+    name_zh: 编织沙滩托特包
+    category_group: fashion_accessories
+    taxonomy_category: handbag
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [woven beach tote, straw beach bag, raffia summer tote]
+        exclude: [woven storage basket, picnic basket]
+      CN:
+        include: [编织沙滩包, 草编托特包, 拉菲草夏季包]
+        exclude: [编织收纳篮, 野餐篮]
+    boundary:
+      include: Carryable open totes made primarily from straw, raffia, or woven-look material.
+      exclude: Home storage baskets and rigid picnic hampers.
+    selection_reasons: [summer_seasonality, basket_bag_visual_confusion]
+    risk_flags: [none]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C016
+    slug: heated_eyelash_curler
+    name_en: Heated eyelash curler
+    name_zh: 电热睫毛夹
+    category_group: beauty_tools
+    taxonomy_category: beauty_tool
+    sampling_role: emerging_candidate
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [heated eyelash curler, electric lash curler, rechargeable eyelash curler]
+        exclude: [manual eyelash curler, lash lift kit]
+      CN:
+        include: [电热睫毛夹, 加热睫毛器, 充电睫毛夹]
+        exclude: [手动睫毛夹, 睫毛烫套装]
+    boundary:
+      include: Battery-powered heated tools shaped to curl eyelashes.
+      exclude: Manual clamp curlers and chemical lash-lift kits.
+    selection_reasons: [compact_beauty_candidate, functionally_distinct_tool]
+    risk_flags: [electrical_safety, eye_area_use]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C017
+    slug: heatless_curling_rod_set
+    name_en: Heatless curling rod set
+    name_zh: 免加热卷发带套装
+    category_group: beauty_tools
+    taxonomy_category: haircare
+    sampling_role: mature_anchor
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [heatless curling rod, overnight curling ribbon, no heat curl set]
+        exclude: [electric curling iron, foam hair rollers]
+      CN:
+        include: [免加热卷发棒, 无热卷发带, 睡眠卷发带]
+        exclude: [电卷发棒, 海绵卷发器]
+    boundary:
+      include: Long flexible ribbons or rods used to wrap hair overnight without heat.
+      exclude: Powered curling irons and sets of small conventional rollers.
+    selection_reasons: [mature_social_commerce_anchor, textile_tool_retrieval]
+    risk_flags: [none]
+    research_seed_refs: [tiktok_next_2026, internal_vocabulary_review]
+
+  - concept_id: BT-C018
+    slug: silicone_scalp_massager
+    name_en: Silicone scalp massager
+    name_zh: 硅胶头皮按摩刷
+    category_group: beauty_tools
+    taxonomy_category: haircare
+    sampling_role: stable_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [silicone scalp massager, shampoo scalp brush, manual scalp scrubber]
+        exclude: [electric scalp massager, pet grooming brush]
+      CN:
+        include: [硅胶头皮按摩梳, 洗头按摩刷, 手动头皮刷]
+        exclude: [电动头皮按摩器, 宠物洗澡刷]
+    boundary:
+      include: Handheld manual shampoo brushes with flexible silicone teeth.
+      exclude: Powered devices and animal grooming brushes.
+    selection_reasons: [stable_personal_care_control, human_pet_brush_boundary]
+    risk_flags: [none]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C019
+    slug: facial_ice_globes
+    name_en: Facial ice globes
+    name_zh: 面部冰球美容工具
+    category_group: beauty_tools
+    taxonomy_category: beauty_tool
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [facial ice globes, cooling face globes, cryo facial globes]
+        exclude: [decorative glass orb, ice roller]
+      CN:
+        include: [面部冰球美容仪, 美容冰球, 冰敷美容球]
+        exclude: [玻璃装饰球, 面部冰滚轮]
+    boundary:
+      include: Paired handheld glass or metal globes designed for chilled facial massage.
+      exclude: Decorative spheres and cylindrical ice rollers.
+    selection_reasons: [decor_object_ambiguity, paired_tool_shape]
+    risk_flags: [health_claims, breakage]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C020
+    slug: facial_cooling_roller
+    name_en: Facial cooling roller
+    name_zh: 面部冰敷滚轮
+    category_group: beauty_tools
+    taxonomy_category: beauty_tool
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [facial cooling roller, ice face roller, reusable cold face roller]
+        exclude: [jade roller, paint roller]
+      CN:
+        include: [面部冰敷滚轮, 冰感美容滚轮, 冷敷面部滚轮]
+        exclude: [玉石滚轮, 油漆滚筒]
+    boundary:
+      include: Reusable chilled roller tools with a single broad cold-contact head.
+      exclude: Stone massage rollers and non-cosmetic rolling tools.
+    selection_reasons: [warm_weather_control, near_neighbor_to_ice_globes]
+    risk_flags: [health_claims]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C021
+    slug: portable_mushroom_table_lamp
+    name_en: Portable mushroom table lamp
+    name_zh: 无线蘑菇台灯
+    category_group: home_decor_organization
+    taxonomy_category: lamp
+    sampling_role: emerging_candidate
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [portable mushroom lamp, cordless mushroom table lamp, dome table lamp]
+        exclude: [mushroom night light, mushroom decor statue]
+      CN:
+        include: [无线蘑菇台灯, 充电蘑菇灯, 圆顶氛围台灯]
+        exclude: [蘑菇小夜灯, 蘑菇摆件]
+    boundary:
+      include: Rechargeable table lamps with a dome shade and short central stem.
+      exclude: Tiny plug-in night lights and non-illuminating mushroom ornaments.
+    selection_reasons: [design_transfer_candidate, distinctive_silhouette]
+    risk_flags: [electrical_safety]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C022
+    slug: modular_pegboard_organizer
+    name_en: Modular pegboard organizer
+    name_zh: 模块化洞洞板收纳
+    category_group: home_decor_organization
+    taxonomy_category: storage_box
+    sampling_role: mature_anchor
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [modular pegboard organizer, desktop pegboard storage, wall pegboard organizer]
+        exclude: [garage tool pegboard, perforated acoustic panel]
+      CN:
+        include: [洞洞板收纳, 模块化洞洞板, 桌面洞洞板]
+        exclude: [车库工具板, 穿孔吸音板]
+    boundary:
+      include: Consumer modular panels with attachable shelves, cups, or hooks for small-item storage.
+      exclude: Industrial garage panels and acoustic wall treatments.
+    selection_reasons: [mature_organization_anchor, modular_configuration_test]
+    risk_flags: [none]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C023
+    slug: stackable_drawer_storage_bins
+    name_en: Stackable drawer storage bins
+    name_zh: 可叠加抽屉收纳盒
+    category_group: home_decor_organization
+    taxonomy_category: storage_box
+    sampling_role: stable_control
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [stackable drawer storage bins, plastic stacking drawer box, modular drawer organizer]
+        exclude: [dresser cabinet, open storage bin]
+      CN:
+        include: [可叠加抽屉收纳盒, 抽屉式收纳箱, 模块化抽屉盒]
+        exclude: [斗柜, 开口收纳筐]
+    boundary:
+      include: Small plastic drawer modules designed to stack vertically.
+      exclude: Furniture-size drawer cabinets and open-top baskets.
+    selection_reasons: [stable_household_control, repeated_module_shape]
+    risk_flags: [none]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C024
+    slug: sculptural_candle
+    name_en: Sculptural candle
+    name_zh: 雕塑造型蜡烛
+    category_group: home_decor_organization
+    taxonomy_category: home_decor
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [sculptural candle, abstract shape candle, decorative body candle]
+        exclude: [ceramic sculpture, sculptural table lamp]
+      CN:
+        include: [雕塑蜡烛, 造型蜡烛, 艺术香薰蜡烛]
+        exclude: [陶瓷雕塑, 雕塑台灯]
+    boundary:
+      include: Burnable wax objects whose three-dimensional form is decorative.
+      exclude: Non-wax ornaments and lamps with similar silhouettes.
+    selection_reasons: [material_disambiguation, decor_lamp_hard_negative]
+    risk_flags: [fire_safety]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C025
+    slug: holiday_projection_lamp
+    name_en: Holiday projection lamp
+    name_zh: 节日投影灯
+    category_group: home_decor_organization
+    taxonomy_category: lamp
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [holiday projection light, christmas projector lamp, outdoor holiday projector]
+        exclude: [home theater projector, galaxy projector]
+      CN:
+        include: [节日投影灯, 圣诞投影灯, 户外图案投影灯]
+        exclude: [家庭影院投影仪, 星空投影灯]
+    boundary:
+      include: Small lights projecting holiday-specific patterns onto walls or building exteriors.
+      exclude: Video projectors and generic galaxy projectors.
+    selection_reasons: [holiday_spike_control, projector_category_boundary]
+    risk_flags: [electrical_safety, outdoor_use]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C026
+    slug: handled_insulated_tumbler
+    name_en: Handled insulated tumbler
+    name_zh: 手柄吸管保温杯
+    category_group: kitchen_drinkware
+    taxonomy_category: drinkware
+    sampling_role: mature_anchor
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [handled insulated tumbler, large straw tumbler with handle, vacuum travel tumbler]
+        exclude: [coffee mug, plastic pitcher]
+      CN:
+        include: [手柄保温杯, 大容量吸管保温杯, 真空车载随行杯]
+        exclude: [咖啡马克杯, 塑料水壶]
+    boundary:
+      include: Large vacuum-insulated travel cups with side handles and reusable straws.
+      exclude: Ceramic mugs, pitchers, and non-insulated novelty cups.
+    selection_reasons: [mature_drinkware_anchor, brand_agnostic_form]
+    risk_flags: [brand_confusion, food_contact]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C027
+    slug: portable_blender_cup
+    name_en: Portable blender cup
+    name_zh: 便携榨汁杯
+    category_group: kitchen_drinkware
+    taxonomy_category: small_appliance
+    sampling_role: emerging_candidate
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [portable blender cup, rechargeable personal blender, travel smoothie blender]
+        exclude: [protein shaker bottle, full size blender]
+      CN:
+        include: [便携榨汁杯, 充电随行果汁杯, 迷你搅拌杯]
+        exclude: [蛋白粉摇摇杯, 台式破壁机]
+    boundary:
+      include: Rechargeable single-serving vessels with an integrated motor and blade.
+      exclude: Manual shaker bottles and countertop blenders.
+    selection_reasons: [portable_appliance_candidate, container_motor_boundary]
+    risk_flags: [electrical_safety, food_contact, blade_safety]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C028
+    slug: divided_bento_lunch_box
+    name_en: Divided bento lunch box
+    name_zh: 分格便当盒
+    category_group: kitchen_drinkware
+    taxonomy_category: cookware
+    sampling_role: stable_control
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [divided bento lunch box, compartment lunch container, leakproof bento box]
+        exclude: [disposable meal tray, lunch bag]
+      CN:
+        include: [分格便当盒, 分隔午餐盒, 防漏饭盒]
+        exclude: [一次性餐盘, 保温午餐袋]
+    boundary:
+      include: Reusable rigid food boxes with multiple internal compartments and a fitted lid.
+      exclude: Disposable trays and fabric lunch carriers.
+    selection_reasons: [stable_food_storage_control, compartment_geometry]
+    risk_flags: [food_contact]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C029
+    slug: glass_can_straw_cup
+    name_en: Glass can-shaped straw cup
+    name_zh: 易拉罐造型玻璃吸管杯
+    category_group: kitchen_drinkware
+    taxonomy_category: drinkware
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [glass can cup with straw, beer can glass tumbler, bamboo lid glass cup]
+        exclude: [insulated tumbler, aluminum beverage can]
+      CN:
+        include: [易拉罐玻璃杯, 竹盖吸管玻璃杯, 罐形玻璃杯]
+        exclude: [保温杯, 铝制饮料罐]
+    boundary:
+      include: Clear can-shaped drinking glasses sold with a lid and reusable straw.
+      exclude: Vacuum-insulated tumblers and disposable beverage cans.
+    selection_reasons: [near_neighbor_to_tumbler, transparent_material_test]
+    risk_flags: [food_contact, breakage]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C030
+    slug: countertop_shaved_ice_machine
+    name_en: Countertop shaved-ice machine
+    name_zh: 家用刨冰机
+    category_group: kitchen_drinkware
+    taxonomy_category: small_appliance
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [countertop shaved ice machine, home snow cone maker, electric ice shaver]
+        exclude: [countertop ice maker, blender]
+      CN:
+        include: [家用刨冰机, 电动碎冰机, 雪花冰机]
+        exclude: [制冰机, 榨汁搅拌机]
+    boundary:
+      include: Small appliances that shave existing ice into snow-like dessert texture.
+      exclude: Machines that freeze new ice cubes and general-purpose blenders.
+    selection_reasons: [summer_demand_control, appliance_function_boundary]
+    risk_flags: [electrical_safety, blade_safety, food_contact]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C031
+    slug: compact_walking_pad
+    name_en: Compact walking pad
+    name_zh: 家用平板走步机
+    category_group: fitness_outdoor
+    taxonomy_category: fitness_equipment
+    sampling_role: mature_anchor
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [compact walking pad, under desk treadmill, foldable walking treadmill]
+        exclude: [full size running treadmill, balance board]
+      CN:
+        include: [走步机, 家用平板跑步机, 办公桌下跑步机]
+        exclude: [大型跑步机, 健身平衡板]
+    boundary:
+      include: Low-profile motorized treadmills primarily marketed for walking or under-desk use.
+      exclude: Full-height running treadmills and non-motorized balance boards.
+    selection_reasons: [mature_fitness_anchor, large_object_retrieval]
+    risk_flags: [electrical_safety, injury_risk]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C032
+    slug: wearable_wrist_ankle_weights
+    name_en: Wearable wrist and ankle weights
+    name_zh: 腕踝可穿戴负重环
+    category_group: fitness_outdoor
+    taxonomy_category: fitness_equipment
+    sampling_role: emerging_candidate
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [wearable wrist weights, ankle weight bangles, weighted fitness bangles]
+        exclude: [weighted vest, wrist brace]
+      CN:
+        include: [腕部负重环, 可穿戴负重块, 腕踝负重手环]
+        exclude: [负重背心, 护腕]
+    boundary:
+      include: Compact modular or bangle-like weights strapped around wrists or ankles.
+      exclude: Weighted clothing, medical braces, and traditional sandbag cuffs.
+    selection_reasons: [emerging_fitness_form, jewelry_equipment_ambiguity]
+    risk_flags: [injury_risk]
+    research_seed_refs: [pinterest_predicts_2026, visual_benchmark_design]
+
+  - concept_id: BT-C033
+    slug: resistance_loop_bands
+    name_en: Resistance loop bands
+    name_zh: 健身环形阻力带
+    category_group: fitness_outdoor
+    taxonomy_category: fitness_equipment
+    sampling_role: stable_control
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [resistance loop bands, fabric booty bands, exercise mini bands]
+        exclude: [long tube resistance band, hair elastic]
+      CN:
+        include: [环形阻力带, 健身弹力圈, 翘臀弹力带]
+        exclude: [长管拉力器, 发圈]
+    boundary:
+      include: Closed-loop elastic or fabric bands used around the limbs for exercise.
+      exclude: Handled resistance tubes and ordinary hair ties.
+    selection_reasons: [stable_fitness_control, scale_ambiguity_test]
+    risk_flags: [injury_risk]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C034
+    slug: fitness_balance_board
+    name_en: Fitness balance board
+    name_zh: 健身平衡板
+    category_group: fitness_outdoor
+    taxonomy_category: fitness_equipment
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [fitness balance board, wooden wobble board, standing desk balance board]
+        exclude: [skateboard deck, toddler rocker board]
+      CN:
+        include: [健身平衡板, 木质摇摆板, 站立办公平衡板]
+        exclude: [滑板板面, 儿童摇摇板]
+    boundary:
+      include: Adult exercise platforms designed to tilt or wobble under both feet.
+      exclude: Wheeled skateboard decks and children's play rockers.
+    selection_reasons: [skateboard_hard_negative, use_context_disambiguation]
+    risk_flags: [injury_risk]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C035
+    slug: pickleball_paddle_set
+    name_en: Pickleball paddle set
+    name_zh: 匹克球拍套装
+    category_group: fitness_outdoor
+    taxonomy_category: outdoor_accessory
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [pickleball paddle set, pickleball paddles and balls, outdoor pickleball kit]
+        exclude: [tennis racket, table tennis paddle]
+      CN:
+        include: [匹克球拍, 匹克球套装, 匹克球拍和球]
+        exclude: [网球拍, 乒乓球拍]
+    boundary:
+      include: Solid-faced short-handle paddles sold singly or with perforated pickleballs.
+      exclude: Strung rackets and table-tennis bats.
+    selection_reasons: [warm_weather_sports_control, racket_family_boundary]
+    risk_flags: [injury_risk]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C036
+    slug: pet_backpack_carrier
+    name_en: Pet backpack carrier
+    name_zh: 宠物背包猫包
+    category_group: pet_lifestyle
+    taxonomy_category: pet_accessory
+    sampling_role: mature_anchor
+    wave: 1
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [pet backpack carrier, cat backpack carrier, ventilated pet travel backpack]
+        exclude: [human hiking backpack, front baby carrier]
+      CN:
+        include: [宠物背包, 猫包, 透气宠物外出包]
+        exclude: [人用登山包, 婴儿背带]
+    boundary:
+      include: Structured wearable backpacks with ventilation and an enclosed compartment for a small pet.
+      exclude: Ordinary human backpacks and infant carriers.
+    selection_reasons: [mature_pet_anchor, transparent_panel_variation]
+    risk_flags: [pet_safety]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C037
+    slug: interactive_rolling_pet_ball
+    name_en: Interactive rolling pet ball
+    name_zh: 自动滚动宠物球
+    category_group: pet_lifestyle
+    taxonomy_category: pet_accessory
+    sampling_role: emerging_candidate
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [interactive rolling pet ball, automatic cat toy ball, rechargeable moving pet ball]
+        exclude: [ordinary rubber pet ball, robot vacuum]
+      CN:
+        include: [自动滚动逗猫球, 电动宠物球, 充电智能宠物球]
+        exclude: [普通橡胶宠物球, 扫地机器人]
+    boundary:
+      include: Rechargeable balls that move autonomously to engage cats or dogs.
+      exclude: Passive balls and wheeled household robots.
+    selection_reasons: [smart_pet_candidate, motion_not_visible_challenge]
+    risk_flags: [electrical_safety, pet_safety]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]
+
+  - concept_id: BT-C038
+    slug: elevated_pet_bowl
+    name_en: Elevated pet bowl
+    name_zh: 高脚宠物碗
+    category_group: pet_lifestyle
+    taxonomy_category: pet_accessory
+    sampling_role: stable_control
+    wave: 2
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [elevated pet bowl, raised cat bowl, elevated dog feeder]
+        exclude: [human pedestal bowl, pet bowl mat]
+      CN:
+        include: [高脚宠物碗, 宠物抬高碗, 高架猫碗]
+        exclude: [人用高脚碗, 宠物餐垫]
+    boundary:
+      include: Food or water bowls raised above the floor by an integrated stand.
+      exclude: Human serving bowls and flat feeding mats.
+    selection_reasons: [stable_pet_control, bowl_context_disambiguation]
+    risk_flags: [food_contact, pet_safety]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C039
+    slug: donut_pet_bed
+    name_en: Donut pet bed
+    name_zh: 甜甜圈宠物窝
+    category_group: pet_lifestyle
+    taxonomy_category: pet_bed
+    sampling_role: ambiguity_probe
+    wave: 4
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [donut pet bed, round calming dog bed, fluffy ring cat bed]
+        exclude: [round floor cushion, inflatable donut]
+      CN:
+        include: [甜甜圈宠物窝, 圆形宠物床, 毛绒环形猫窝]
+        exclude: [圆形坐垫, 充气游泳圈]
+    boundary:
+      include: Soft circular pet beds with a raised ring bolster and recessed center.
+      exclude: Human floor cushions and inflatable rings.
+    selection_reasons: [floor_cushion_hard_negative, texture_shape_test]
+    risk_flags: [pet_safety]
+    research_seed_refs: [internal_vocabulary_review, visual_benchmark_design]
+
+  - concept_id: BT-C040
+    slug: pet_cooling_mat
+    name_en: Pet cooling mat
+    name_zh: 宠物降温垫
+    category_group: pet_lifestyle
+    taxonomy_category: pet_bed
+    sampling_role: seasonal_control
+    wave: 3
+    label_status: unverified
+    transfer_label: unassigned
+    market_queries:
+      US:
+        include: [pet cooling mat, dog cooling pad, summer cat cooling bed]
+        exclude: [electric heating pet pad, human yoga mat]
+      CN:
+        include: [宠物降温垫, 狗狗冰垫, 夏季猫凉垫]
+        exclude: [宠物电热垫, 人用瑜伽垫]
+    boundary:
+      include: Non-heating mats marketed to reduce a pet's surface temperature in warm weather.
+      exclude: Heated pet pads and human exercise mats.
+    selection_reasons: [summer_pet_control, flat_mat_context_test]
+    risk_flags: [pet_safety, material_safety]
+    research_seed_refs: [tiktok_next_2026, visual_benchmark_design]

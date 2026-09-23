@@ -1,0 +1,1 @@
+observation_id,observed_at_utc,source_created_at_utc,snapshot_sequence,market,source_id,platform,source_record_id,source_url,concept_id,product_family_id,title,creator_or_seller,price,currency,view_count,like_count,review_count,sold_count,availability_status,asset_path,asset_sha256,rights_basis_id,market_label_evidence_path,market_label_evidence_sha256,split,notes

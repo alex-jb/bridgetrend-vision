@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">BridgeTrend Visual Evidence Agent architecture</title>
+  <desc id="desc">A judge browser calls an AWS App Runner service. OpenCV 5 updates an evidence world state, a bounded policy selects an action, DynamoDB stores traces, CloudWatch stores metrics, and a human reviewer can make an additive decision.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#537b73"/>
+    </marker>
+    <style>
+      text { font-family: "DejaVu Sans", Arial, sans-serif; }
+      .eyebrow { font-size: 18px; font-weight: 700; letter-spacing: 3px; fill: #0f6b5d; }
+      .title { font-size: 54px; font-weight: 700; letter-spacing: -2px; fill: #102626; }
+      .subtitle { font-size: 21px; font-weight: 400; fill: #526966; }
+      .label { font-size: 15px; font-weight: 700; letter-spacing: 1.6px; fill: #0f6b5d; }
+      .node-title { font-size: 27px; font-weight: 700; fill: #102626; }
+      .node-copy { font-size: 17px; font-weight: 400; fill: #526966; }
+      .small { font-size: 15px; font-weight: 600; fill: #526966; }
+      .white-title { font-size: 27px; font-weight: 700; fill: #ffffff; }
+      .white-copy { font-size: 17px; font-weight: 400; fill: #c8ddd8; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#f4f3ed"/>
+  <circle cx="1440" cy="72" r="190" fill="#dfefe8" opacity="0.75"/>
+  <circle cx="1510" cy="120" r="94" fill="#f7ddaf" opacity="0.55"/>
+
+  <text x="86" y="78" class="eyebrow">BRIDGETREND · AGENTIC VISION</text>
+  <text x="86" y="145" class="title">One trace from image to action</text>
+  <text x="86" y="188" class="subtitle">OpenCV evidence changes the next decision; every transition remains inspectable.</text>
+
+  <path d="M 331 386 H 398" stroke="#537b73" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 681 386 H 748" stroke="#537b73" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1031 386 H 1098" stroke="#537b73" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1381 386 H 1448" stroke="#537b73" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="72" y="265" width="260" height="245" rx="26" fill="#ffffff" stroke="#d4dad3" stroke-width="2"/>
+    <rect x="100" y="293" width="58" height="58" rx="16" fill="#dff1e9"/>
+    <path d="M116 307h26v29h-26z M121 312h16 M121 318h16 M121 324h10" stroke="#0f6b5d" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <text x="100" y="385" class="label">JUDGE SURFACE</text>
+    <text x="100" y="425" class="node-title">Web console</text>
+    <text x="100" y="459" class="node-copy">Cases · metrics · failures</text>
+    <text x="100" y="485" class="node-copy">review · JSON export</text>
+  </g>
+
+  <g>
+    <rect x="398" y="265" width="284" height="245" rx="26" fill="#102f2c"/>
+    <rect x="426" y="293" width="58" height="58" rx="16" fill="#1f514b"/>
+    <path d="M440 310h30v24h-30z M446 304v6 M464 304v6 M446 334v7 M464 334v7" stroke="#8ed0bd" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <text x="426" y="385" class="label" fill="#8ed0bd">AWS RUNTIME</text>
+    <text x="426" y="425" class="white-title">App Runner</text>
+    <text x="426" y="459" class="white-copy">FastAPI orchestration</text>
+    <text x="426" y="485" class="white-copy">bounded acquisition budget</text>
+  </g>
+
+  <g>
+    <rect x="748" y="265" width="284" height="245" rx="26" fill="#ffffff" stroke="#b9d6cc" stroke-width="3"/>
+    <rect x="776" y="293" width="58" height="58" rx="16" fill="#dff1e9"/>
+    <circle cx="805" cy="322" r="15" fill="none" stroke="#0f6b5d" stroke-width="3"/>
+    <circle cx="805" cy="322" r="5" fill="#0f6b5d"/>
+    <path d="M790 322h-7 M827 322h-7 M805 307v-7 M805 344v-7" stroke="#0f6b5d" stroke-width="3" stroke-linecap="round"/>
+    <text x="776" y="385" class="label">PERCEPTION</text>
+    <text x="776" y="425" class="node-title">OpenCV 5</text>
+    <text x="776" y="459" class="node-copy">quality · ORB · RANSAC</text>
+    <text x="776" y="485" class="node-copy">color · silhouette</text>
+  </g>
+
+  <g>
+    <rect x="1098" y="265" width="284" height="245" rx="26" fill="#ffffff" stroke="#d4dad3" stroke-width="2"/>
+    <rect x="1126" y="293" width="58" height="58" rx="16" fill="#fff0cf"/>
+    <path d="M1140 309h30l-5 27h-20z M1147 316h16 M1148 323h14" stroke="#ad6b16" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    <text x="1126" y="385" class="label" fill="#ad6b16">WORLD STATE</text>
+    <text x="1126" y="425" class="node-title">Bounded policy</text>
+    <text x="1126" y="459" class="node-copy">accept · retrieve · review</text>
+    <text x="1126" y="485" class="node-copy">or reject</text>
+  </g>
+
+  <g>
+    <rect x="1448" y="291" width="112" height="190" rx="26" fill="#0f6b5d"/>
+    <circle cx="1504" cy="344" r="24" fill="#2d8879"/>
+    <path d="M1493 344l8 8 16-19" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1504" y="405" text-anchor="middle" class="white-title" font-size="22">Action</text>
+    <text x="1504" y="435" text-anchor="middle" class="white-copy" font-size="14">auditable</text>
+  </g>
+
+  <path d="M 540 510 V 602 H 436" stroke="#7d9691" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 540 510 V 602 H 748" stroke="#7d9691" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1240 510 V 602 H 1125" stroke="#7d9691" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="252" y="602" width="300" height="142" rx="22" fill="#ffffff" stroke="#d4dad3" stroke-width="2"/>
+    <text x="280" y="641" class="label">AUDIT TRAIL</text>
+    <text x="280" y="682" class="node-title">DynamoDB</text>
+    <text x="280" y="714" class="node-copy">model trace + human decision</text>
+  </g>
+
+  <g>
+    <rect x="602" y="602" width="300" height="142" rx="22" fill="#ffffff" stroke="#d4dad3" stroke-width="2"/>
+    <text x="630" y="641" class="label">OBSERVABILITY</text>
+    <text x="630" y="682" class="node-title">CloudWatch</text>
+    <text x="630" y="714" class="node-copy">latency · traces · safe actions</text>
+  </g>
+
+  <g>
+    <rect x="952" y="602" width="346" height="142" rx="22" fill="#fff8e9" stroke="#e4c98d" stroke-width="2"/>
+    <text x="980" y="641" class="label" fill="#ad6b16">HUMAN CONTROL</text>
+    <text x="980" y="682" class="node-title">Additive review</text>
+    <text x="980" y="714" class="node-copy">original model output is preserved</text>
+  </g>
+
+  <rect x="72" y="799" width="1456" height="58" rx="16" fill="#e6e8e1"/>
+  <circle cx="103" cy="828" r="8" fill="#ad6b16"/>
+  <text x="126" y="835" class="small">BOUNDARY · CC0 fixtures validate system behavior only — not market demand or China-to-U.S. forecasting.</text>
+</svg>
