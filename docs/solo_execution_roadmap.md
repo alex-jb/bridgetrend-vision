@@ -83,3 +83,5 @@ advanced model must demonstrate measurable gains without weakening auditability.
 The detailed competition implementation and demonstration sequence are in
 [`judge_console.md`](judge_console.md) and
 [`opencv_competition_plan.md`](opencv_competition_plan.md).
+The post-competition research gate is frozen in
+[`vision_paper_blueprint.md`](vision_paper_blueprint.md).

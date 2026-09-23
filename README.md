@@ -25,6 +25,7 @@ retrieve more evidence, request human review, or reject it.
 - [Competition technical report](docs/competition_technical_report.md)
 - [Competition architecture](docs/competition_architecture.md)
 - [Judge video script](docs/demo_video_script.md)
+- [Vision paper blueprint](docs/vision_paper_blueprint.md)
 - [AWS App Runner deployment](deploy/aws/README.md)
 - [Solo execution roadmap](docs/solo_execution_roadmap.md)
 
