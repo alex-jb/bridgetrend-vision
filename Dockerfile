@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir \
       "fastapi>=0.115,<1" \
       "numpy>=1.26,<3" \
       "opencv-python-headless>=5,<6" \
+      "pandas>=2.1,<4" \
       "Pillow>=10,<13" \
       "PyYAML>=6,<7" \
       "uvicorn>=0.30,<1" \
