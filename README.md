@@ -21,6 +21,22 @@ retrieve more evidence, request human review, or reject it.
 - [Real OpenCLIP smoke-test record](docs/openclip_smoke_test_2026-09-17.md)
 - [G1B 40-concept sampling protocol](docs/g1b_concept_sampling_protocol.md)
 - [G1B Wave 1 trend-intake protocol](docs/g1b_wave1_intake_protocol.md)
+- [Competition Judge Console](docs/judge_console.md)
+- [AWS App Runner deployment](deploy/aws/README.md)
+- [Solo execution roadmap](docs/solo_execution_roadmap.md)
+
+Run the responsive judge console:
+
+~~~bash
+pip install -e ".[dev,opencv5,competition]"
+uvicorn bridgetrend_vision.competition_app:app \
+  --app-dir src --host 0.0.0.0 --port 8080
+~~~
+
+The console exposes all six deterministic OpenCV cases, the measurement table,
+the complete hash-linked trace, system metrics, a failure gallery, and a human
+review action that preserves the original model decision. The same container
+can run on AWS App Runner with DynamoDB traces and CloudWatch metrics.
 
 Run a deterministic decision trace without downloading a model:
 

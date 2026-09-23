@@ -16,7 +16,7 @@ jobs:
       - name: Install lightweight test dependencies
         run: >-
           pip install "opencv-python-headless>=5,<6" "Pillow>=10,<13"
-          numpy pandas PyYAML pytest ruff
+          numpy pandas PyYAML pytest ruff fastapi httpx2 boto3 uvicorn
       - name: Run Ruff
         run: ruff check .
       - name: Run unit tests
@@ -50,3 +50,7 @@ jobs:
           --pack /tmp/bridgetrend-demo-pack/cases.json
           --case exact_match
           --output results/evidence_sessions/opencv-provider-smoke.json
+      - name: Smoke test judge-console API
+        env:
+          PYTHONPATH: src
+        run: python scripts/run_competition_suite.py --output results/judge-console/ci-suite.json

@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: BridgeTrend Visual Evidence Agent judge endpoint on AWS App Runner
+
+Parameters:
+  ImageUri:
+    Type: String
+    Description: Immutable ECR image URI, preferably pinned by digest.
+  ServiceName:
+    Type: String
+    Default: bridgetrend-vision-judge
+  TraceTableName:
+    Type: String
+    Default: bridgetrend-vision-traces
+
+Resources:
+  TraceTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Ref TraceTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  AppRunnerEcrAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+
+  AppRunnerInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: tasks.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: BridgeTrendRuntime
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:Scan
+                Resource: !GetAtt TraceTable.Arn
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    cloudwatch:namespace: BridgeTrend/Vision
+
+  JudgeService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      SourceConfiguration:
+        AutoDeploymentsEnabled: false
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerEcrAccessRole.Arn
+        ImageRepository:
+          ImageRepositoryType: ECR
+          ImageIdentifier: !Ref ImageUri
+          ImageConfiguration:
+            Port: "8080"
+            RuntimeEnvironmentVariables:
+              - Name: BRIDGETREND_TRACE_BACKEND
+                Value: dynamodb
+              - Name: BRIDGETREND_TRACE_TABLE
+                Value: !Ref TraceTable
+              - Name: BRIDGETREND_METRICS_BACKEND
+                Value: cloudwatch
+              - Name: BRIDGETREND_ENFORCE_OPENCV5
+                Value: "1"
+      InstanceConfiguration:
+        Cpu: "1 vCPU"
+        Memory: "2 GB"
+        InstanceRoleArn: !GetAtt AppRunnerInstanceRole.Arn
+      HealthCheckConfiguration:
+        Path: /healthz
+        Protocol: HTTP
+        HealthyThreshold: 1
+        UnhealthyThreshold: 3
+        Interval: 10
+        Timeout: 5
+
+  OperationsDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub "${ServiceName}-operations"
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "title": "Evidence-agent latency",
+                "region": "${AWS::Region}",
+                "metrics": [["BridgeTrend/Vision", "LatencyMs"]],
+                "stat": "p95",
+                "period": 60
+              }
+            },
+            {
+              "type": "metric",
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "title": "Safe action and trace checks",
+                "region": "${AWS::Region}",
+                "metrics": [
+                  ["BridgeTrend/Vision", "ExpectationMet"],
+                  [".", "TraceValid"],
+                  [".", "HumanReview"]
+                ],
+                "stat": "Average",
+                "period": 60
+              }
+            }
+          ]
+        }
+
+Outputs:
+  ServiceUrl:
+    Description: Public judge endpoint hostname
+    Value: !GetAtt JudgeService.ServiceUrl
+  TraceTable:
+    Description: DynamoDB table that stores immutable model traces and human reviews
+    Value: !Ref TraceTable
+  DashboardName:
+    Description: CloudWatch operations dashboard
+    Value: !Ref OperationsDashboard

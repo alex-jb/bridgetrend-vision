@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="BridgeTrend Visual Evidence Agent judge console"
+    />
+    <title>BridgeTrend · Visual Evidence Agent</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="BridgeTrend home">
+          <span class="brand-mark" aria-hidden="true">BT</span>
+          <span>
+            <strong>BridgeTrend</strong>
+            <small>Visual Evidence Agent</small>
+          </span>
+        </a>
+        <nav class="top-actions" aria-label="Demo status">
+          <span class="status-pill"><i></i> OpenCV 5 live</span>
+          <span class="status-pill muted">Agentic Vision</span>
+          <a href="/docs" target="_blank" rel="noreferrer">API docs</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div>
+            <p class="eyebrow">PERCEIVE · DECIDE · ACT · VERIFY</p>
+            <h1>Visual evidence should change the next action.</h1>
+            <p class="hero-copy">
+              A bounded agent uses OpenCV 5 to inspect product-image evidence,
+              retrieve what is missing, and choose a safe action: accept,
+              retrieve more, request human review, or reject.
+            </p>
+            <div class="hero-actions">
+              <button class="button primary" id="run-suite">Run all six cases</button>
+              <a class="button secondary" href="#failure-gallery">View failure gallery</a>
+            </div>
+          </div>
+          <aside class="boundary-card" aria-label="Research boundary">
+            <span class="boundary-icon" aria-hidden="true">◎</span>
+            <div>
+              <strong>Honest demo boundary</strong>
+              <p>
+                The six CC0 fixtures test system behavior. They are not market
+                evidence and do not validate China-to-U.S. demand forecasting.
+              </p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="metric-strip" aria-label="Runtime metrics">
+          <article><span>Runs</span><strong id="metric-runs">0</strong></article>
+          <article><span>Expected action</span><strong id="metric-success">—</strong></article>
+          <article><span>Valid traces</span><strong id="metric-traces">—</strong></article>
+          <article><span>p95 latency</span><strong id="metric-latency">—</strong></article>
+        </section>
+
+        <section class="workspace" aria-label="Evidence-agent workspace">
+          <aside class="case-rail">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">SCENARIO LIBRARY</p>
+                <h2>Choose a case</h2>
+              </div>
+              <span id="case-count" class="count-badge">0</span>
+            </div>
+            <div id="case-list" class="case-list" aria-live="polite"></div>
+          </aside>
+
+          <article class="console-panel">
+            <div id="empty-state" class="empty-state">
+              <span aria-hidden="true">↗</span>
+              <h2>Select a scenario</h2>
+              <p>Inspect the images, run the bounded loop, then audit every decision.</p>
+            </div>
+
+            <div id="case-detail" hidden>
+              <div class="console-header">
+                <div>
+                  <p class="eyebrow" id="case-label">CASE</p>
+                  <h2 id="case-title"></h2>
+                  <p id="case-summary" class="subtle"></p>
+                </div>
+                <button class="button primary" id="run-case">Run evidence loop</button>
+              </div>
+
+              <div class="image-stage">
+                <figure class="query-card">
+                  <figcaption><span>INPUT</span> U.S. query image</figcaption>
+                  <img id="query-image" alt="Selected query fixture" />
+                </figure>
+                <div class="candidate-stack">
+                  <p><span>CANDIDATES</span> Additional cross-market evidence</p>
+                  <div id="candidate-images" class="candidate-grid"></div>
+                </div>
+              </div>
+
+              <div class="agent-loop" aria-label="Agent workflow">
+                <div><span>01</span><strong>Perceive</strong><small>OpenCV quality + geometry</small></div>
+                <b>→</b>
+                <div><span>02</span><strong>Decide</strong><small>Policy + uncertainty</small></div>
+                <b>→</b>
+                <div><span>03</span><strong>Act</strong><small>Acquire or escalate</small></div>
+                <b>→</b>
+                <div><span>04</span><strong>Verify</strong><small>Hash-linked trace</small></div>
+              </div>
+
+              <section id="result-panel" class="result-panel" hidden aria-live="polite">
+                <div class="result-summary">
+                  <div>
+                    <p class="eyebrow">FINAL SAFE ACTION</p>
+                    <div class="decision-line">
+                      <span id="decision-badge" class="decision-badge"></span>
+                      <h3 id="decision-title"></h3>
+                    </div>
+                    <p id="decision-reasons" class="subtle"></p>
+                  </div>
+                  <dl class="result-facts">
+                    <div><dt>Confidence</dt><dd id="result-confidence">—</dd></div>
+                    <div><dt>Evidence steps</dt><dd id="result-steps">—</dd></div>
+                    <div><dt>Trace</dt><dd id="result-trace">—</dd></div>
+                    <div><dt>Latency</dt><dd id="result-latency">—</dd></div>
+                  </dl>
+                </div>
+
+                <div class="tabs" role="tablist" aria-label="Run details">
+                  <button class="tab active" data-tab="measurements">Measurements</button>
+                  <button class="tab" data-tab="audit">Audit trace</button>
+                  <button class="tab" data-tab="review">Human control</button>
+                </div>
+
+                <div id="tab-measurements" class="tab-panel">
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Pair</th>
+                          <th>Retrieval</th>
+                          <th>Geometry</th>
+                          <th>Color</th>
+                          <th>Quality</th>
+                          <th>Fused</th>
+                        </tr>
+                      </thead>
+                      <tbody id="measurement-rows"></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div id="tab-audit" class="tab-panel" hidden>
+                  <ol id="audit-events" class="audit-list"></ol>
+                </div>
+                <div id="tab-review" class="tab-panel" hidden>
+                  <div class="review-box">
+                    <div>
+                      <h3>Human approval remains authoritative</h3>
+                      <p>
+                        A reviewer can preserve the model trace while recording a
+                        final operational decision.
+                      </p>
+                    </div>
+                    <label>
+                      Review note
+                      <textarea id="review-note" rows="3" placeholder="What evidence changed your judgment?"></textarea>
+                    </label>
+                    <div class="review-actions">
+                      <button class="button success" data-review="accept">Accept</button>
+                      <button class="button secondary" data-review="request_more_evidence">Request more</button>
+                      <button class="button danger" data-review="reject">Reject</button>
+                    </div>
+                    <p id="review-status" class="subtle" role="status"></p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </article>
+        </section>
+
+        <section id="failure-gallery" class="failure-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">RESPONSIBLE OPERATION</p>
+              <h2>Failure and recovery gallery</h2>
+            </div>
+            <p>
+              The system earns trust by exposing where automation stops—not by
+              hiding difficult examples.
+            </p>
+          </div>
+          <div id="failure-cards" class="failure-grid"></div>
+        </section>
+
+        <section class="architecture-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">DEPLOYMENT</p>
+              <h2>One trace from image to action</h2>
+            </div>
+          </div>
+          <div class="architecture-flow" aria-label="AWS architecture">
+            <div><small>Evidence</small><strong>CC0 fixture pack</strong></div>
+            <span>→</span>
+            <div><small>Vision worker</small><strong>OpenCV 5</strong></div>
+            <span>→</span>
+            <div><small>Bounded agent</small><strong>App Runner</strong></div>
+            <span>→</span>
+            <div><small>Audit trail</small><strong>DynamoDB</strong></div>
+            <span>→</span>
+            <div><small>Observability</small><strong>CloudWatch</strong></div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>BridgeTrend Visual Evidence Agent</span>
+        <span>Fixture behavior ≠ market or demand validation</span>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast" hidden role="status"></div>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>

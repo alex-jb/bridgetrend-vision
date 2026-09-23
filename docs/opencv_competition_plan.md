@@ -90,6 +90,17 @@ listing must remain in one split to prevent leakage.
 - No claim of demand prediction; that belongs to BridgeTrend Research and
   requires historical market evidence.
 
+## Current verified state — September 23, 2026
+
+- G1A rights-cleared calibration: complete (150 images, 30 families, 92 tests).
+- OpenCV evidence loop and SHA-256 trace: complete.
+- Six-case CC0 fixture pack with success, failure, ambiguity, and recovery: complete.
+- Responsive Judge Console, API, metrics, failure gallery, and human review: implemented.
+- AWS App Runner, DynamoDB, CloudWatch infrastructure contract: implemented;
+  live deployment and endpoint verification remain pending.
+- Cross-market G1B data claim: blocked until the frozen source gates pass.
+- Submission report, final results bundle, architecture graphic, and video: pending.
+
 ## Official references
 
 - [Competition page](https://opencv26.devpost.com/)

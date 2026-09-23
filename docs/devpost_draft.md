@@ -44,8 +44,13 @@ of the evidence, policy version, confidence, and reasons.
 - A reproducible cross-market retrieval contract.
 - A substantive OpenCV 5 preprocessing and quality-evidence layer.
 - An auditable four-action agent with explicit failure handling.
-- A test plan covering retrieval, calibration, selective risk, latency, and
-  cost rather than relying on a few attractive demo examples.
+- A responsive Judge Console with six deterministic success, failure,
+  ambiguity, and recovery scenarios.
+- Human review that preserves the original model decision and SHA-256 trace.
+- Runtime evaluation of expected safe action, trace validity, acquisition use,
+  review rate, and p50/p95 latency.
+- An AWS App Runner deployment contract with DynamoDB trace storage and
+  CloudWatch operational metrics.
 
 ## What we learned
 
@@ -55,11 +60,12 @@ path to abstain or ask a human.
 
 ## What's next
 
-We will calibrate the policy on a rights-cleared bilingual product set, deploy
-the complete vertical slice on AWS, add a review interface, and publish a
-failure-case gallery and reproducible evaluation report.
+We will deploy and verify the complete vertical slice on AWS, freeze the final
+container digest, run robustness and cost experiments, publish the technical
+report, and record a judge-focused video. Market-valid U.S./China evidence
+remains a separate G1B gate and is not inferred from the demo fixtures.
 
 ## Built with
 
-OpenCV 5, Python, OpenCLIP, PyTorch, NumPy, AWS S3, ECS/Fargate, Step Functions,
-OpenSearch Serverless, DynamoDB, CloudWatch, and Streamlit.
+OpenCV 5, Python, FastAPI, OpenCLIP, PyTorch, NumPy, AWS App Runner, DynamoDB,
+CloudWatch, Docker, HTML, CSS, and JavaScript.
