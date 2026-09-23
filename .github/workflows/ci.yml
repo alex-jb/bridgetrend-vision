@@ -58,3 +58,22 @@ jobs:
         env:
           PYTHONPATH: src
         run: python scripts/run_robustness_benchmark.py --output results/judge-console/ci-robustness.json
+      - name: Build judge container
+        run: docker build --tag bridgetrend-vision:ci .
+      - name: Smoke test judge container
+        run: |
+          docker run --detach --name bridgetrend-vision-ci \
+            --publish 127.0.0.1:18080:8080 bridgetrend-vision:ci
+          ready=0
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --silent http://127.0.0.1:18080/healthz \
+              > /tmp/bridgetrend-container-health.json; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          docker logs bridgetrend-vision-ci
+          test "$ready" -eq 1
+          python -c 'import json; payload=json.load(open("/tmp/bridgetrend-container-health.json")); assert payload["opencv_major_ok"] is True'
+          docker rm --force bridgetrend-vision-ci
