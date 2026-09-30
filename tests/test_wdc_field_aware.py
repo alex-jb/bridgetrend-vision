@@ -6,7 +6,7 @@ from bridgetrend_vision.wdc_field_aware import (
 from bridgetrend_vision.wdc_phones_benchmark import Dataset
 
 
-def test_variant_conflict_and_natural_unmatched_stay_unaccepted() -> None:
+def test_model_conflict_and_natural_unmatched_stay_unaccepted() -> None:
     catalog = {
         "silver": {"brand": "Acme", "modelnum": "P-1234", "memory": "128GB", "color": "silver"},
         "black": {"brand": "Acme", "modelnum": "P-1234", "memory": "128GB", "color": "black"},
@@ -15,8 +15,10 @@ def test_variant_conflict_and_natural_unmatched_stay_unaccepted() -> None:
     matched = {"brand": "ACME", "modelnum": "P1234", "memory": "128 gb", "color": "Black"}
     no_match = {"brand": "Acme", "modelnum": "P-9999", "color": "black"}
     matcher = FieldAwareMatcher(catalog, {})
-    assert matcher.predict(matched, catalog)[0] == "black"
+    assert matcher.predict(matched, catalog) == ("", 0.0)
     assert matcher.predict(no_match, catalog) == ("", 0.0)
+    catalog = {"black": catalog["black"], "older": catalog["older"]}
+    assert matcher.predict(matched, catalog)[0] == "black"
     dataset = Dataset({"yes": matched, "no": no_match}, catalog, {"yes": "black", "no": None})
     result = evaluate(dataset, matcher, 1.0)
     assert result["correct_matched_accepted"] == 1
@@ -24,12 +26,13 @@ def test_variant_conflict_and_natural_unmatched_stay_unaccepted() -> None:
     assert result["unmatched_abstained"] == 1
 
 
-def test_conflicting_identifier_does_not_override_agreement() -> None:
+def test_model_and_brand_conflict_veto_candidate() -> None:
     catalog = {"x": {"brand": "Acme", "mpn": "ABC-777", "model": "P-1234",
                      "product_gtin": "1234567890123"}}
     matcher = FieldAwareMatcher(catalog, {})
     assert matcher.predict({"brand": "Acme", "mpn": "ABC777", "model": "P1234",
-                            "product_gtin": "1234567890999"}, catalog) == ("", 0.0)
+                            "product_gtin": "1234567890999"}, catalog)[0] == "x"
+    assert matcher.predict({"brand": "Acme", "mpn": "ABC777", "model": "P9999"}, catalog) == ("", 0.0)
     assert matcher.predict({"brand": "Else", "mpn": "ABC777"}, catalog) == ("", 0.0)
 
 
