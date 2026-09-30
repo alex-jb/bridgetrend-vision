@@ -1,13 +1,7 @@
-name: Abt-Buy official-source benchmark
+name: Abt-Buy official-source benchmark (manual)
 
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/abt-buy-benchmark.yml"
-      - "src/bridgetrend_vision/abt_buy_benchmark.py"
-      - "scripts/benchmark_abt_buy.py"
-      - "tests/test_abt_buy_benchmark.py"
-      - "docs/abt_buy_identity_baseline.md"
+  workflow_dispatch:
 
 permissions:
   contents: read
