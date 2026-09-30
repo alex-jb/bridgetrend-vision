@@ -1,8 +1,10 @@
 # Abt-Buy full-gallery identity baseline
 
 This independent experiment tests whether product names retrieve the same real
-product across two historical catalogs. It makes **no** U.S./China transfer,
-prospective trend, or sales prediction claim. It does not use BT-X001.
+product across two historical **English-language merchant catalogs**. It makes
+**no** claim about Chinese/English cross-border SKU identity, real live merchant
+catalog performance, U.S./China transfer, prospective trends, or sales. It
+does not use BT-X001.
 
 ## Source and attribution
 
@@ -32,16 +34,24 @@ PYTHONPATH=src python scripts/benchmark_abt_buy.py \
 ```
 
 The script prints only an aggregate JSON summary, archive origin supplied by
-the operator, and the archive SHA-256. It
+the operator, archive SHA-256, and per-file raw and canonical-record SHA-256.
+Canonical hashes cover every parsed column and row while ignoring CSV line
+endings, row order, and encoding. They let an official-archive run be compared
+with a mirror without publishing product data. It
 does not write product records, rankings, or mapping IDs. Keep the source
 archive and extracted records out of Git.
 
-The dedicated CI workflow downloads the official ZIP into its temporary
-workspace and prints the aggregate result. It never uploads the source data.
+An optional manual workflow can retry downloading the official ZIP into a
+temporary runner workspace and print the aggregate result. It never uploads
+the source data. The first attempted automatic official download timed out
+from GitHub Actions, so the mirror score is provisional until an official ZIP
+is obtained and its canonical-record hashes agree.
 
 ## Fixed method and denominators
 
-- Every Abt name queries **all 1,092** Buy names. The gold mapping never
+- Every Abt name queries **all 1,092** Buy names. Names alone are the input;
+  descriptions, manufacturer, prices, and ID values do not enter the scoring
+  representation. The gold mapping never
   affects TF-IDF features or candidate selection.
 - The baseline uses case-folded character 3–5 grams, unsupervised TF-IDF
   fitted on the two catalogs, L2 normalization, and cosine ranking. Zero
