@@ -43,6 +43,16 @@ def test_real_archive_schema_multiple_positives_and_unmatched_query(tmp_path):
     assert metrics["queries_without_gold"] == 1
     assert metrics["gold_link_recall@5"] == 1
     assert metrics["matched_query_hit_rate@5"] == 1
+    reverse = evaluate_full_gallery(
+        rank_full_gallery(buy, abt),
+        set(buy),
+        set(abt),
+        {(right, left) for left, right in gold},
+    )
+    assert reverse["queries_total"] == 3
+    assert reverse["queries_with_gold"] == 2
+    assert reverse["queries_without_gold"] == 1
+    assert reverse["gallery_candidates_per_query"] == 2
 
 
 def test_gold_is_not_used_to_filter_candidates():
