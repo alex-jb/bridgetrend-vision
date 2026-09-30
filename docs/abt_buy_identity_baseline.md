@@ -57,10 +57,15 @@ is obtained and its canonical-record hashes agree.
   fitted on the two catalogs, L2 normalization, and cosine ranking. Zero
   similarity candidates stay in the gallery. Equal scores break by Buy ID.
 - Gold-link Recall@1/5 divides by **all 1,097 gold links**. Matched-query
-  Hit@1/5 divides by Abt queries with at least one gold link. The report also
-  counts all queries, queries with and without gold, and all 1,180,452 scored
-  candidate pairs. Queries without gold are not quietly labeled as failed
-  matches or discarded from the coverage accounting.
+  Hit@1/5 divides by queries with at least one gold link. The report includes
+  both Abt→Buy and Buy→Abt rankings, all queries, queries with and without
+  gold, and all 1,180,452 scored candidate pairs per direction. Link recall
+  and query hit rate differ because some queries have multiple gold links.
+- In this dataset, **all 1,081 Abt and all 1,092 Buy records have at least one
+  gold counterpart**. No real unmatched-query or abstention performance can
+  be estimated. The baseline always ranks a candidate and has no threshold;
+  an artificial removal of gold records would test only this forced-choice
+  behavior, not real unmatched products. No threshold is tuned on the gold.
 - The archive SHA-256, fixed method, and complete coverage make a later model
   comparison repeatable. This single baseline does not establish an
   improvement over another method.
