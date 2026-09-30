@@ -8,7 +8,9 @@ generation or training features.
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
+import json
 import math
 import re
 from collections import Counter, defaultdict
@@ -92,6 +94,40 @@ def _products(rows: list[dict[str, str]], source: str) -> dict[str, str]:
             raise ValueError(f"{source} contains duplicate ID: {product_id}")
         products[product_id] = name
     return products
+
+
+def archive_table_fingerprints(
+    archive: str | Path,
+) -> dict[str, dict[str, str | int | list[str]]]:
+    """Return raw-file and parsed-record hashes without exposing source rows.
+
+    Canonical hashes ignore CSV row order, field order, text encoding, and line
+    endings. Equal hashes on the official ZIP and a mirror establish equality
+    of every parsed field and record, not just the scoring columns.
+    """
+
+    fingerprints: dict[str, dict[str, str | int | list[str]]] = {}
+    with ZipFile(archive) as zipped:
+        for filename, required in ARCHIVE_FILES.items():
+            matches = [name for name in zipped.namelist() if Path(name).name == filename]
+            if len(matches) != 1:
+                raise ValueError(f"expected exactly one {filename} in archive")
+            payload = zipped.read(matches[0])
+            rows = _read_csv(payload, required, filename)
+            columns = sorted(rows[0]) if rows else []
+            row_count = len(rows)
+            index_columns = ("idAbt", "idBuy") if filename.endswith("perfectMapping.csv") else ("id",)
+            rows.sort(key=lambda row: tuple(row[column] for column in index_columns))
+            canonical = json.dumps(
+                rows, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+            ).encode("utf-8")
+            fingerprints[filename] = {
+                "columns": columns,
+                "rows": row_count,
+                "raw_sha256": hashlib.sha256(payload).hexdigest(),
+                "canonical_records_sha256": hashlib.sha256(canonical).hexdigest(),
+            }
+    return fingerprints
 
 
 def _char_grams(text: str) -> Counter[str]:
