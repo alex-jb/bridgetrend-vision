@@ -169,7 +169,7 @@ def _tfidf(
 
 
 def rank_full_gallery(abt: dict[str, str], buy: dict[str, str]) -> dict[str, list[str]]:
-    """Rank every Buy ID per Abt query, including zero-overlap candidates."""
+    """Rank every gallery ID per query, including zero-overlap candidates."""
 
     queries, gallery = _tfidf(abt, buy)
     posting_lists: dict[str, list[tuple[str, float]]] = defaultdict(list)
@@ -189,34 +189,34 @@ def rank_full_gallery(abt: dict[str, str], buy: dict[str, str]) -> dict[str, lis
 
 def evaluate_full_gallery(
     rankings: dict[str, list[str]],
-    abt_ids: set[str],
-    buy_ids: set[str],
+    query_ids: set[str],
+    gallery_ids: set[str],
     gold: set[tuple[str, str]],
     *,
     ks: tuple[int, ...] = (1, 5),
 ) -> dict[str, int | float]:
     """Report link recall and matched-query hit rate with explicit denominators."""
 
-    if set(rankings) != abt_ids:
-        raise ValueError("rankings must include every Abt query")
+    if set(rankings) != query_ids:
+        raise ValueError("rankings must include every query")
     if not ks or any(k < 1 for k in ks):
         raise ValueError("ks must contain positive integers")
     for query_id, ranking in rankings.items():
-        if len(ranking) != len(buy_ids) or set(ranking) != buy_ids:
+        if len(ranking) != len(gallery_ids) or set(ranking) != gallery_ids:
             raise ValueError(f"incomplete or duplicate candidate ranking for {query_id}")
-    if not gold or any(left not in abt_ids or right not in buy_ids for left, right in gold):
+    if not gold or any(left not in query_ids or right not in gallery_ids for left, right in gold):
         raise ValueError("gold must contain valid links")
 
     by_query: dict[str, set[str]] = defaultdict(set)
     for query_id, candidate_id in gold:
         by_query[query_id].add(candidate_id)
     result: dict[str, int | float] = {
-        "abt_queries": len(abt_ids),
-        "buy_candidates_per_query": len(buy_ids),
-        "candidate_pairs_scored": len(abt_ids) * len(buy_ids),
+        "queries_total": len(query_ids),
+        "gallery_candidates_per_query": len(gallery_ids),
+        "candidate_pairs_scored": len(query_ids) * len(gallery_ids),
         "gold_links": len(gold),
         "queries_with_gold": len(by_query),
-        "queries_without_gold": len(abt_ids) - len(by_query),
+        "queries_without_gold": len(query_ids) - len(by_query),
     }
     for k in ks:
         retrieved_links = 0
