@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 from bridgetrend_vision.abt_buy_benchmark import (
+    archive_table_fingerprints,
     evaluate_full_gallery,
     load_abt_buy,
     rank_full_gallery,
@@ -34,6 +35,7 @@ def main() -> None:
         "license": "https://creativecommons.org/licenses/by/4.0/",
         "archive_origin": args.archive_origin,
         "archive_sha256": hashlib.sha256(args.archive.read_bytes()).hexdigest(),
+        "source_table_fingerprints": archive_table_fingerprints(args.archive),
         "method": "unsupervised name-only character 3-5 gram TF-IDF cosine",
         **evaluate_full_gallery(rankings, set(abt), set(buy), gold),
     }
