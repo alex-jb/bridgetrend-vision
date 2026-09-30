@@ -29,6 +29,8 @@ def main() -> None:
 
     abt, buy, gold = load_abt_buy(args.archive)
     rankings = rank_full_gallery(abt, buy)
+    reverse_gold = {(buy_id, abt_id) for abt_id, buy_id in gold}
+    reverse_rankings = rank_full_gallery(buy, abt)
     summary = {
         "benchmark": "Leipzig Abt-Buy full-gallery identity retrieval",
         "source": "https://dbs.uni-leipzig.de/research/projects/benchmark-datasets-for-entity-resolution",
@@ -38,6 +40,9 @@ def main() -> None:
         "source_table_fingerprints": archive_table_fingerprints(args.archive),
         "method": "unsupervised name-only character 3-5 gram TF-IDF cosine",
         **evaluate_full_gallery(rankings, set(abt), set(buy), gold),
+        "reverse_buy_to_abt": evaluate_full_gallery(
+            reverse_rankings, set(buy), set(abt), reverse_gold
+        ),
     }
     output = json.dumps(summary, indent=2, sort_keys=True) + "\n"
     if args.output:
