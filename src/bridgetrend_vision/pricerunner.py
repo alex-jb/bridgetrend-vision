@@ -19,6 +19,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 SOURCE_COLUMNS = (
+    "Product ID", "Product Title", " Merchant ID", " Cluster ID",
+    " Cluster Label", " Category ID", " Category Label",
+)
+# Explicit header-name mapping only; Product Title cell values are untouched.
+CANONICAL_COLUMNS = (
     "Product ID", "Product Title", "Merchant ID", "Cluster ID",
     "Cluster Label", "Category ID", "Category Label",
 )

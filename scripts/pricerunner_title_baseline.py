@@ -74,7 +74,7 @@ def verify_zip_and_csv(archive: Path, csv: Path) -> None:
 
 def validate_header(csv: Path) -> None:
     # Header only: neither source labels nor title rows are inspected here.
-    columns = tuple(pd.read_csv(csv, nrows=0, encoding="utf-8-sig").columns)
+    columns = tuple(pd.read_csv(csv, nrows=0, encoding="utf-8-sig", skipinitialspace=False).columns)
     if columns != method.SOURCE_COLUMNS:
         raise ValueError(f"Unexpected CSV schema {columns!r}; required {method.SOURCE_COLUMNS!r}")
 
@@ -115,9 +115,10 @@ def title_projection(csv: Path) -> tuple[list[method.TitleOffer], list[method.Ti
     validate_header(csv)
     # usecols enforces the prediction/label firewall, even though CSV contains labels.
     frame = pd.read_csv(
-        csv, usecols=["Product ID", "Product Title", "Merchant ID"],
-        dtype=str, keep_default_na=False, encoding="utf-8-sig",
+        csv, usecols=[method.SOURCE_COLUMNS[index] for index in (0, 1, 2)],
+        dtype=str, keep_default_na=False, encoding="utf-8-sig", skipinitialspace=False,
     )
+    frame = frame.rename(columns=dict(zip(method.SOURCE_COLUMNS, method.CANONICAL_COLUMNS)))
     rows = list(frame[["Product ID", "Product Title", "Merchant ID"]].itertuples(index=False, name=None))
     gallery, queries = method.split_titles(rows)
     return gallery, queries, len(rows)
@@ -183,6 +184,8 @@ def source_receipt(args: argparse.Namespace) -> None:
         "source_archive_sha256": archive_sha, "source_csv_sha256": csv_sha,
         "source_rows": row_count, "gallery_rows": len(gallery), "query_rows": len(queries),
         "schema": list(method.SOURCE_COLUMNS),
+        "column_mapping": dict(zip(method.SOURCE_COLUMNS, method.CANONICAL_COLUMNS)),
+        "source_schema_revision": "v1.1-header-only-amendment",
         "protocol_sha256": digest(PROTOCOL_FILE),
         "freeze_sha256": digest(FREEZE_FILE),
         "matcher_sha256": digest(METHOD_FILE),
@@ -217,6 +220,8 @@ def read_receipt(args: argparse.Namespace) -> dict[str, object]:
         "source_provenance_status": "unverified_local_bytes_pending_acquisition_review",
         "source_zip_member": ZIP_MEMBER,
         "source_rows": method.SOURCE_ROWS, "schema": list(method.SOURCE_COLUMNS),
+        "column_mapping": dict(zip(method.SOURCE_COLUMNS, method.CANONICAL_COLUMNS)),
+        "source_schema_revision": "v1.1-header-only-amendment",
         "protocol_sha256": digest(PROTOCOL_FILE),
         "freeze_sha256": digest(FREEZE_FILE),
         "matcher_sha256": digest(METHOD_FILE),
@@ -273,9 +278,10 @@ def rank(args: argparse.Namespace) -> None:
 def label_projection(csv: Path, gallery_ids: set[str], query_ids: set[str]) -> tuple[list[method.LabelOffer], list[method.LabelOffer]]:
     # This is the first code path that opens row-level Cluster ID/category.
     frame = pd.read_csv(
-        csv, usecols=["Product ID", "Cluster ID", "Cluster Label", "Category ID", "Category Label"],
-        dtype=str, keep_default_na=False, encoding="utf-8-sig",
+        csv, usecols=[method.SOURCE_COLUMNS[index] for index in (0, 3, 4, 5, 6)],
+        dtype=str, keep_default_na=False, encoding="utf-8-sig", skipinitialspace=False,
     )
+    frame = frame.rename(columns=dict(zip(method.SOURCE_COLUMNS, method.CANONICAL_COLUMNS)))
     if len(frame) != method.SOURCE_ROWS:
         raise ValueError("Source row count changed before label evaluation")
     for column in frame.columns:

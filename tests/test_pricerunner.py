@@ -114,6 +114,36 @@ def test_schema_or_source_quality_failure_blocks_scoring(tmp_path):
         p.merchant_side("one")
 
 
+def test_v11_exact_physical_header_and_title_cells_unchanged(tmp_path, monkeypatch):
+    source = tmp_path / "invented-v11.csv"
+    gallery_id, query_id = merchant_for("gallery"), merchant_for("query")
+    with source.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(p.SOURCE_COLUMNS)
+        writer.writerows([
+            ("g1", "  cedar blue bowl 450 ml", gallery_id, "c1", "cedar", "7", "kitchen"),
+            ("g2", "cedar blue bowl 450 ml  ", gallery_id, "c1", "cedar", "7", "kitchen"),
+            ("q1", "  cedar blue bowl 450 ml  ", query_id, "c1", "cedar", "8", "kitchen"),
+        ])
+    gallery, queries, count = cli.title_projection(source)
+    assert count == 3
+    assert gallery[0].title == "  cedar blue bowl 450 ml"
+    assert gallery[1].title == "cedar blue bowl 450 ml  "
+    assert queries[0].title == "  cedar blue bowl 450 ml  "
+    monkeypatch.setattr(p, "SOURCE_ROWS", 3)
+    g_labels, q_labels = cli.label_projection(source, {"g1", "g2"}, {"q1"})
+    assert {item.cluster_id for item in (*g_labels, *q_labels)} == {"c1"}
+    assert q_labels[0].category_id == "8"
+
+    # The original v1 unspaced header must remain a schema failure in v1.1.
+    with source.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(p.CANONICAL_COLUMNS)
+        writer.writerow(("g1", "  cedar blue bowl", gallery_id, "c1", "cedar", "7", "kitchen"))
+    with pytest.raises(ValueError, match="Unexpected CSV schema"):
+        cli.title_projection(source)
+
+
 def test_runtime_budget_fails_without_partial_rankings():
     ticks = iter([0, p.MAX_RANK_SECONDS + 1])
     with pytest.raises(TimeoutError, match="no output"):
