@@ -1,12 +1,19 @@
 """Only invented titles/IDs: no PriceRunner row or label has been accessed."""
 
 import csv
+import importlib.util
+from argparse import Namespace
 from pathlib import Path
 
 import pytest
 
 from bridgetrend_vision import pricerunner as p
-from scripts import pricerunner_title_baseline as cli
+
+CLI_FILE = Path(__file__).resolve().parents[1] / "scripts/pricerunner_title_baseline.py"
+SPEC = importlib.util.spec_from_file_location("pricerunner_title_baseline", CLI_FILE)
+assert SPEC and SPEC.loader
+cli = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(cli)
 
 
 def merchant_for(side: str) -> str:
@@ -110,3 +117,22 @@ def test_runtime_budget_fails_without_partial_rankings():
     ticks = iter([0, p.MAX_RANK_SECONDS + 1])
     with pytest.raises(TimeoutError, match="no output"):
         p.rank_titles([p.TitleOffer("g", "cedar ceramic bowl")], [p.TitleOffer("q", "cedar ceramic bowl")], clock=lambda: next(ticks))
+
+
+def test_replay_rejects_tampered_candidate_and_score_before_labels():
+    gallery = [p.TitleOffer("g1", "cedar ceramic bowl"), p.TitleOffer("g2", "apple tablet")]
+    queries = [p.TitleOffer("q1", "cedar ceramic bowl")]
+    saved = p.rank_titles(gallery, queries)
+    cli.verify_predictions(gallery, queries, saved)
+    with pytest.raises(ValueError, match="differs"):
+        cli.verify_predictions(gallery, queries, [p.Prediction("q1", "g2", saved[0].score)])
+    with pytest.raises(ValueError, match="differs"):
+        cli.verify_predictions(gallery, queries, [p.Prediction("q1", "g1", 0.73)])
+
+
+def test_unreviewed_checkout_rejected_before_source_open(monkeypatch):
+    monkeypatch.setattr(cli, "verify_versions", lambda: None)
+    monkeypatch.setattr(cli, "git_head_clean", lambda: "a" * 40)
+    args = Namespace(expected_freeze_sha="b" * 40, archive="/nonexistent.zip", csv="/nonexistent.csv")
+    with pytest.raises(ValueError, match="externally reviewed freeze SHA"):
+        cli.source_receipt(args)
