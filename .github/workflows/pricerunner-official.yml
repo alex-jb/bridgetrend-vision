@@ -50,7 +50,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/pricerunner"
           curl --fail --show-error --silent --location --max-time 120 --retry 2 \
             --dump-header "$RUNNER_TEMP/pricerunner/download.log" \
-            --output "$RUNNER_TEMP/pricerunner/source.zip" "$UCI_ARCHIVE_URL"
+            --output "$RUNNER_TEMP/pricerunner/source.zip" \
+            --write-out '%{url_effective}\n%{http_code}\n' "$UCI_ARCHIVE_URL" \
+            > "$RUNNER_TEMP/pricerunner/curl-result.txt"
           python - <<'PY'
           import os, shutil, zipfile
           from pathlib import Path
@@ -62,10 +64,47 @@ jobs:
               with archive.open(members[0]) as src, (root / members[0]).open("wb") as dst:
                   shutil.copyfileobj(src, dst)
           PY
-          echo "RETRIEVED_AT_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          export RETRIEVED_AT_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "RETRIEVED_AT_UTC=$RETRIEVED_AT_UTC" >> "$GITHUB_ENV"
           echo "SOURCE_ARCHIVE_SHA256=$(sha256sum "$RUNNER_TEMP/pricerunner/source.zip" | cut -d' ' -f1)" >> "$GITHUB_ENV"
           echo "SOURCE_CSV_SHA256=$(sha256sum "$RUNNER_TEMP/pricerunner/pricerunner_aggregate.csv" | cut -d' ' -f1)" >> "$GITHUB_ENV"
-          grep -E '^HTTP/' "$RUNNER_TEMP/pricerunner/download.log" || true
+          python - <<'PY'
+          import hashlib, json, os, re
+          from pathlib import Path
+          from urllib.parse import urljoin, urlsplit, urlunsplit
+
+          folder = Path(os.environ["RUNNER_TEMP"]) / "pricerunner"
+          digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+          initial = os.environ["UCI_ARCHIVE_URL"]
+          effective, status = (folder / "curl-result.txt").read_text().splitlines()[:2]
+          headers = (folder / "download.log").read_text(errors="replace")
+          statuses = re.findall(r"(?im)^HTTP/\S+\s+(\d{3})", headers)
+          locations = re.findall(r"(?im)^location:\s*(\S+)", headers)
+          current = initial
+          redirect_hosts = []
+          for location in locations:
+              current = urljoin(current, location)
+              redirect_hosts.append(urlsplit(current).hostname)
+          parts = urlsplit(effective)
+          final_url_without_query = urlunsplit((parts.scheme, parts.hostname or "", parts.path, "", ""))
+          record = {
+              "initial_url": initial,
+              "final_url_without_query_or_fragment": final_url_without_query,
+              "http_status_chain": statuses,
+              "final_http_status": status,
+              "redirect_hosts": redirect_hosts,
+              "retrieved_at_utc_clock": os.environ["RETRIEVED_AT_UTC"],
+              "zip_sha256": digest(folder / "source.zip"),
+              "csv_sha256": digest(folder / "pricerunner_aggregate.csv"),
+              "header_log_sha256": digest(folder / "download.log"),
+          }
+          if status != "200" or not statuses or statuses[-1] != "200":
+              raise SystemExit("Unexpected UCI HTTP response; stop before scoring")
+          content = json.dumps(record, sort_keys=True, indent=2) + "\n"
+          (folder / "acquisition-record.json").write_text(content)
+          print("Sanitized acquisition record: " + json.dumps(record, sort_keys=True))
+          print("Acquisition record SHA256: " + digest(folder / "acquisition-record.json"))
+          PY
       - name: Source receipt, title-only ranking, replayed label evaluation
         env:
           FROZEN_SHA: ${{ github.event.pull_request.head.sha }}
@@ -78,7 +117,7 @@ jobs:
           python scripts/pricerunner_title_baseline.py receipt \
             --expected-freeze-sha "$FROZEN_SHA" --archive "$folder/source.zip" \
             --csv "$folder/pricerunner_aggregate.csv" --archive-origin "$UCI_ARCHIVE_URL" \
-            --retrieval-log "$folder/download.log" --retrieved-at-utc "$RETRIEVED_AT_UTC" \
+            --retrieval-log "$folder/acquisition-record.json" --retrieved-at-utc "$RETRIEVED_AT_UTC" \
             --receipt "$folder/receipt.json"
           python - <<'PY'
           import json, os
@@ -90,11 +129,13 @@ jobs:
           python scripts/pricerunner_title_baseline.py rank \
             --expected-freeze-sha "$FROZEN_SHA" --archive "$folder/source.zip" \
             --csv "$folder/pricerunner_aggregate.csv" --receipt "$folder/receipt.json" \
+            --retrieval-log "$folder/acquisition-record.json" \
             --predictions "$folder/predictions.json"
           echo "Pre-label predictions SHA256: $(sha256sum "$folder/predictions.json" | cut -d' ' -f1)"
           python scripts/pricerunner_title_baseline.py evaluate \
             --expected-freeze-sha "$FROZEN_SHA" --archive "$folder/source.zip" \
             --csv "$folder/pricerunner_aggregate.csv" --receipt "$folder/receipt.json" \
+            --retrieval-log "$folder/acquisition-record.json" \
             --predictions "$folder/predictions.json" --outcomes "$folder/outcomes.json" \
             --report "$folder/report.json"
           python - <<'PY'
@@ -106,3 +147,14 @@ jobs:
               print(f"Aggregate {key}: {json.dumps(report[key], sort_keys=True)}")
           PY
           echo "Aggregate report SHA256: $(sha256sum "$folder/report.json" | cut -d' ' -f1)"
+      - name: Preserve source metadata and aggregate report only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pricerunner-metadata-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/pricerunner/acquisition-record.json
+            ${{ runner.temp }}/pricerunner/receipt.json
+            ${{ runner.temp }}/pricerunner/report.json
+          if-no-files-found: warn
+          retention-days: 90

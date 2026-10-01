@@ -2,6 +2,7 @@
 
 import csv
 import importlib.util
+import json
 from argparse import Namespace
 from pathlib import Path
 
@@ -136,3 +137,30 @@ def test_unreviewed_checkout_rejected_before_source_open(monkeypatch):
     args = Namespace(expected_freeze_sha="b" * 40, archive="/nonexistent.zip", csv="/nonexistent.csv")
     with pytest.raises(ValueError, match="externally reviewed freeze SHA"):
         cli.source_receipt(args)
+
+
+def test_acquisition_record_source_hash_and_exact_origin(tmp_path):
+    archive, csv_path = tmp_path / "source.zip", tmp_path / "pricerunner_aggregate.csv"
+    archive.write_bytes(b"invented-archive-bytes")
+    csv_path.write_bytes(b"invented-csv-bytes")
+    record_path = tmp_path / "acquisition.json"
+    record = {
+        "initial_url": cli.UCI_ARCHIVE_URL,
+        "final_url_without_query_or_fragment": "https://archive.ics.uci.edu/static/file.zip",
+        "final_http_status": "200", "http_status_chain": ["302", "200"],
+        "redirect_hosts": ["archive.ics.uci.edu"],
+        "retrieved_at_utc_clock": "2026-10-01T01:05:00+00:00",
+        "zip_sha256": cli.digest(archive), "csv_sha256": cli.digest(csv_path),
+        "header_log_sha256": "a" * 64,
+    }
+    record_path.write_text(json.dumps(record))
+    assert cli.verify_acquisition_record(record_path, cli.digest(archive), cli.digest(csv_path)) == record
+    record["initial_url"] = "https://archive.ics.uci.edu/static/public/other.zip"
+    record_path.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match="initial_url"):
+        cli.verify_acquisition_record(record_path, cli.digest(archive), cli.digest(csv_path))
+    record["initial_url"] = cli.UCI_ARCHIVE_URL
+    record["csv_sha256"] = "f" * 64
+    record_path.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match="csv_sha256"):
+        cli.verify_acquisition_record(record_path, cli.digest(archive), cli.digest(csv_path))

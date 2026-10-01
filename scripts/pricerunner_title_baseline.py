@@ -16,7 +16,6 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
-from urllib.parse import urlparse
 import zipfile
 
 import numpy as np
@@ -28,6 +27,7 @@ from bridgetrend_vision import pricerunner as method
 
 
 UCI_URL = "https://archive.ics.uci.edu/dataset/837/product+classification+and+clustering"
+UCI_ARCHIVE_URL = "https://archive.ics.uci.edu/static/public/837/product%2Bclassification%2Band%2Bclustering.zip"
 ZIP_MEMBER = "pricerunner_aggregate.csv"
 REQUIRED_VERSIONS = {
     "python": "3.11", "numpy": "2.3.5", "scipy": "1.17.0",
@@ -79,6 +79,38 @@ def validate_header(csv: Path) -> None:
         raise ValueError(f"Unexpected CSV schema {columns!r}; required {method.SOURCE_COLUMNS!r}")
 
 
+def verify_acquisition_record(record_path: Path, archive_sha: str, csv_sha: str) -> dict[str, object]:
+    """Check the sanitized provenance record's internal consistency.
+
+    A local JSON file remains caller supplied; a reviewer must compare it to
+    the actual independent UCI acquisition log after the guarded run.
+    """
+    record = json.loads(record_path.read_text(encoding="utf-8"))
+    expected = {
+        "initial_url": UCI_ARCHIVE_URL,
+        "zip_sha256": archive_sha,
+        "csv_sha256": csv_sha,
+        "final_http_status": "200",
+    }
+    for key, value in expected.items():
+        if record.get(key) != value:
+            raise ValueError(f"Acquisition record mismatch: {key}")
+    if not record.get("http_status_chain") or record["http_status_chain"][-1] != "200":
+        raise ValueError("Acquisition record lacks successful response chain")
+    final = str(record.get("final_url_without_query_or_fragment", ""))
+    if not final.startswith("https://") or "?" in final or "#" in final:
+        raise ValueError("Acquisition record final URL must be HTTPS and redacted")
+    if not isinstance(record.get("redirect_hosts"), list):
+        raise ValueError("Acquisition record lacks redirect host list")
+    header_sha = str(record.get("header_log_sha256", ""))
+    if len(header_sha) != 64 or any(char not in "0123456789abcdef" for char in header_sha):
+        raise ValueError("Acquisition record lacks header-log SHA-256")
+    parsed_time = datetime.fromisoformat(str(record.get("retrieved_at_utc_clock", "")).replace("Z", "+00:00"))
+    if parsed_time.utcoffset() != timezone.utc.utcoffset(parsed_time):
+        raise ValueError("Acquisition clock timestamp must be UTC")
+    return record
+
+
 def title_projection(csv: Path) -> tuple[list[method.TitleOffer], list[method.TitleOffer], int]:
     validate_header(csv)
     # usecols enforces the prediction/label firewall, even though CSV contains labels.
@@ -128,24 +160,27 @@ def source_receipt(args: argparse.Namespace) -> None:
         raise ValueError("Checkout does not match externally reviewed freeze SHA")
     archive, csv = Path(args.archive), Path(args.csv)
     verify_zip_and_csv(archive, csv)
+    archive_sha, csv_sha = digest(archive), digest(csv)
+    acquisition = verify_acquisition_record(Path(args.retrieval_log), archive_sha, csv_sha)
     gallery, queries, row_count = title_projection(csv)
     if row_count != method.SOURCE_ROWS:
         raise ValueError(f"Expected {method.SOURCE_ROWS} source rows, found {row_count}")
     acquired = datetime.fromisoformat(args.retrieved_at_utc.replace("Z", "+00:00"))
     if acquired.utcoffset() != timezone.utc.utcoffset(acquired):
         raise ValueError("Retrieval timestamp must have an explicit UTC offset")
-    origin = urlparse(args.archive_origin)
-    if origin.scheme != "https" or origin.netloc != "archive.ics.uci.edu" or not origin.path.lower().endswith(".zip"):
-        raise ValueError("Archive origin claim must be an exact direct HTTPS UCI ZIP URL")
+    if args.archive_origin != UCI_ARCHIVE_URL:
+        raise ValueError("Archive origin must equal frozen direct UCI #837 ZIP URL")
+    if acquired.isoformat() != datetime.fromisoformat(str(acquisition["retrieved_at_utc_clock"]).replace("Z", "+00:00")).isoformat():
+        raise ValueError("Caller retrieval timestamp differs from sanitized acquisition record")
     receipt = {
         "source_page_url": UCI_URL,
-        "source_archive_origin_claim": args.archive_origin,
+        "source_archive_origin_claim": UCI_ARCHIVE_URL,
         "source_provenance_status": "unverified_local_bytes_pending_acquisition_review",
-        "retrieval_log_sha256": digest(Path(args.retrieval_log)),
+        "acquisition_record_sha256": digest(Path(args.retrieval_log)),
         "source_zip_member": ZIP_MEMBER,
         "retrieved_at_utc_declared": acquired.isoformat(),
         "receipt_created_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source_archive_sha256": digest(archive), "source_csv_sha256": digest(csv),
+        "source_archive_sha256": archive_sha, "source_csv_sha256": csv_sha,
         "source_rows": row_count, "gallery_rows": len(gallery), "query_rows": len(queries),
         "schema": list(method.SOURCE_COLUMNS),
         "protocol_sha256": digest(PROTOCOL_FILE),
@@ -178,6 +213,7 @@ def read_receipt(args: argparse.Namespace) -> dict[str, object]:
         raise ValueError("Checkout/receipt differs from externally reviewed freeze SHA")
     expected = {
         "source_page_url": UCI_URL,
+        "source_archive_origin_claim": UCI_ARCHIVE_URL,
         "source_provenance_status": "unverified_local_bytes_pending_acquisition_review",
         "source_zip_member": ZIP_MEMBER,
         "source_rows": method.SOURCE_ROWS, "schema": list(method.SOURCE_COLUMNS),
@@ -201,11 +237,8 @@ def read_receipt(args: argparse.Namespace) -> dict[str, object]:
     for key, value in expected.items():
         if receipt.get(key) != value:
             raise ValueError(f"Source receipt mismatch: {key}")
-    origin = urlparse(str(receipt.get("source_archive_origin_claim", "")))
-    if origin.scheme != "https" or origin.netloc != "archive.ics.uci.edu" or not origin.path.lower().endswith(".zip"):
-        raise ValueError("Missing direct UCI archive-origin claim")
-    if not receipt.get("retrieval_log_sha256"):
-        raise ValueError("Missing retrieval-log digest")
+    if receipt.get("acquisition_record_sha256") != digest(Path(args.retrieval_log)):
+        raise ValueError("Acquisition record hash differs from frozen receipt")
     for timestamp_key in ("retrieved_at_utc_declared", "receipt_created_at_utc"):
         raw = str(receipt.get(timestamp_key, ""))
         try:
@@ -218,6 +251,7 @@ def read_receipt(args: argparse.Namespace) -> dict[str, object]:
     verify_zip_and_csv(archive, csv)
     if receipt.get("source_archive_sha256") != digest(archive) or receipt.get("source_csv_sha256") != digest(csv):
         raise ValueError("Source hash mismatch; scoring blocked")
+    verify_acquisition_record(Path(args.retrieval_log), str(receipt["source_archive_sha256"]), str(receipt["source_csv_sha256"]))
     return receipt
 
 
@@ -303,11 +337,11 @@ def main() -> None:
         command.add_argument("--archive", required=True, help="official UCI ZIP")
         command.add_argument("--csv", required=True, help="extracted pricerunner_aggregate.csv")
         command.add_argument("--receipt", required=True, help="source and frozen-method manifest")
+        command.add_argument("--retrieval-log", required=True, help="sanitized acquisition JSON bound to source receipt")
         command.add_argument("--expected-freeze-sha", required=True, help="externally reviewed immutable Git commit SHA")
         if name == "receipt":
             command.add_argument("--retrieved-at-utc", required=True, help="ISO 8601 UTC timestamp")
             command.add_argument("--archive-origin", required=True, help="claimed direct UCI ZIP URL")
-            command.add_argument("--retrieval-log", required=True, help="saved download/redirect log for external provenance review")
         else:
             command.add_argument("--predictions", required=True)
         if name == "evaluate":
