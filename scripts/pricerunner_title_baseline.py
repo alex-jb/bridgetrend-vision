@@ -1,0 +1,276 @@
+"""Prospective PriceRunner source receipt, title ranking, and one-shot scoring.
+
+The receipt command reads only the CSV header and title/ID projection. The
+ranking command reads no Cluster ID or category field. Only the final evaluate
+command opens row-level labels, after a prediction artifact is saved.
+"""
+
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timezone
+from hashlib import sha256
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import zipfile
+
+import numpy as np
+import pandas as pd
+import scipy
+import sklearn
+
+from bridgetrend_vision import pricerunner as method
+
+
+UCI_URL = "https://archive.ics.uci.edu/dataset/837/product+classification+and+clustering"
+ZIP_MEMBER = "pricerunner_aggregate.csv"
+REQUIRED_VERSIONS = {
+    "python": "3.11", "numpy": "2.3.5", "scipy": "1.17.0", "scikit_learn": "1.8.0",
+}
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+METHOD_FILE = PROJECT_ROOT / "src/bridgetrend_vision/pricerunner.py"
+PROTOCOL_FILE = PROJECT_ROOT / "docs/pricerunner_open_set_protocol.md"
+FREEZE_FILE = PROJECT_ROOT / "docs/pricerunner_title_matcher_freeze.md"
+
+
+def digest(path: Path) -> str:
+    hasher = sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def verify_versions() -> None:
+    found = {
+        "python": f"{sys.version_info.major}.{sys.version_info.minor}",
+        "numpy": np.__version__, "scipy": scipy.__version__,
+        "scikit_learn": sklearn.__version__,
+    }
+    if found != REQUIRED_VERSIONS:
+        raise ValueError(f"Frozen benchmark environment required {REQUIRED_VERSIONS}; found {found}")
+
+
+def verify_zip_and_csv(archive: Path, csv: Path) -> None:
+    if archive.suffix.lower() != ".zip" or csv.name != ZIP_MEMBER:
+        raise ValueError(f"Expected UCI ZIP and extracted member named {ZIP_MEMBER}")
+    with zipfile.ZipFile(archive) as package:
+        members = [name for name in package.namelist() if not name.endswith("/")]
+        if members != [ZIP_MEMBER]:
+            raise ValueError(f"Unexpected ZIP member list {members!r}; stop for source review")
+        hasher = sha256()
+        with package.open(ZIP_MEMBER) as stream:
+            for chunk in iter(lambda: stream.read(1 << 20), b""):
+                hasher.update(chunk)
+    if hasher.hexdigest() != digest(csv):
+        raise ValueError("Extracted CSV differs from the UCI ZIP member")
+
+
+def validate_header(csv: Path) -> None:
+    # Header only: neither source labels nor title rows are inspected here.
+    columns = tuple(pd.read_csv(csv, nrows=0, encoding="utf-8-sig").columns)
+    if columns != method.SOURCE_COLUMNS:
+        raise ValueError(f"Unexpected CSV schema {columns!r}; required {method.SOURCE_COLUMNS!r}")
+
+
+def title_projection(csv: Path) -> tuple[list[method.TitleOffer], list[method.TitleOffer], int]:
+    validate_header(csv)
+    # usecols enforces the prediction/label firewall, even though CSV contains labels.
+    frame = pd.read_csv(
+        csv, usecols=["Product ID", "Product Title", "Merchant ID"],
+        dtype=str, keep_default_na=False, encoding="utf-8-sig",
+    )
+    rows = list(frame[["Product ID", "Product Title", "Merchant ID"]].itertuples(index=False, name=None))
+    gallery, queries = method.split_titles(rows)
+    return gallery, queries, len(rows)
+
+
+def git_head_clean() -> str:
+    result = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=PROJECT_ROOT,
+        capture_output=True, text=True, check=True,
+    )
+    if result.stdout.strip():
+        raise ValueError("Checkout is dirty; use the frozen committed benchmark code")
+    return subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT, text=True,
+    ).strip()
+
+
+def atomic_bytes(destination: Path, content: bytes) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".pricerunner-", dir=destination.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, destination)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def json_bytes(value: object) -> bytes:
+    return (json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
+
+
+def source_receipt(args: argparse.Namespace) -> None:
+    verify_versions()
+    commit = git_head_clean()
+    archive, csv = Path(args.archive), Path(args.csv)
+    verify_zip_and_csv(archive, csv)
+    gallery, queries, row_count = title_projection(csv)
+    if row_count != method.SOURCE_ROWS:
+        raise ValueError(f"Expected {method.SOURCE_ROWS} source rows, found {row_count}")
+    acquired = datetime.fromisoformat(args.retrieved_at_utc.replace("Z", "+00:00"))
+    if acquired.utcoffset() != timezone.utc.utcoffset(acquired):
+        raise ValueError("Retrieval timestamp must have an explicit UTC offset")
+    receipt = {
+        "source_url": UCI_URL, "source_zip_member": ZIP_MEMBER,
+        "retrieved_at_utc": acquired.isoformat(),
+        "source_archive_sha256": digest(archive), "source_csv_sha256": digest(csv),
+        "source_rows": row_count, "gallery_rows": len(gallery), "query_rows": len(queries),
+        "schema": list(method.SOURCE_COLUMNS),
+        "protocol_sha256": digest(PROTOCOL_FILE),
+        "freeze_sha256": digest(FREEZE_FILE),
+        "matcher_sha256": digest(METHOD_FILE),
+        "matcher_git_commit": commit,
+        "environment": REQUIRED_VERSIONS,
+        "ranking": {
+            "name": "gallery-fit title-only char_wb TF-IDF cosine",
+            "ngrams": [3, 5], "strip_accents": "unicode", "lowercase": True,
+            "norm": "l2", "idf": "smoothed", "minimum_df": 1,
+            "gallery": "all source gallery rows, no label/category shortlist",
+            "tie_break": "smallest UTF-8 Product ID among exact equal scores",
+            "threshold_inclusive": method.THRESHOLD,
+            "query_chunk": method.QUERY_CHUNK,
+            "max_rank_seconds": method.MAX_RANK_SECONDS,
+            "bootstrap_seed": method.BOOTSTRAP_SEED,
+            "bootstrap_draws": method.BOOTSTRAP_SAMPLES,
+        },
+    }
+    atomic_bytes(Path(args.receipt), json_bytes(receipt))
+
+
+def read_receipt(args: argparse.Namespace) -> dict[str, object]:
+    verify_versions()
+    receipt = json.loads(Path(args.receipt).read_text(encoding="utf-8"))
+    if receipt.get("matcher_git_commit") != git_head_clean():
+        raise ValueError("Checkout commit differs from frozen source receipt")
+    expected = {
+        "source_url": UCI_URL, "source_zip_member": ZIP_MEMBER,
+        "source_rows": method.SOURCE_ROWS, "schema": list(method.SOURCE_COLUMNS),
+        "protocol_sha256": digest(PROTOCOL_FILE),
+        "freeze_sha256": digest(FREEZE_FILE),
+        "matcher_sha256": digest(METHOD_FILE),
+        "environment": REQUIRED_VERSIONS,
+        "ranking": {
+            "name": "gallery-fit title-only char_wb TF-IDF cosine",
+            "ngrams": [3, 5], "strip_accents": "unicode", "lowercase": True,
+            "norm": "l2", "idf": "smoothed", "minimum_df": 1,
+            "gallery": "all source gallery rows, no label/category shortlist",
+            "tie_break": "smallest UTF-8 Product ID among exact equal scores",
+            "threshold_inclusive": method.THRESHOLD,
+            "query_chunk": method.QUERY_CHUNK,
+            "max_rank_seconds": method.MAX_RANK_SECONDS,
+            "bootstrap_seed": method.BOOTSTRAP_SEED,
+            "bootstrap_draws": method.BOOTSTRAP_SAMPLES,
+        },
+    }
+    for key, value in expected.items():
+        if receipt.get(key) != value:
+            raise ValueError(f"Source receipt mismatch: {key}")
+    archive, csv = Path(args.archive), Path(args.csv)
+    verify_zip_and_csv(archive, csv)
+    if receipt.get("source_archive_sha256") != digest(archive) or receipt.get("source_csv_sha256") != digest(csv):
+        raise ValueError("Source hash mismatch; scoring blocked")
+    return receipt
+
+
+def rank(args: argparse.Namespace) -> None:
+    receipt = read_receipt(args)
+    gallery, queries, count = title_projection(Path(args.csv))
+    if count != method.SOURCE_ROWS or len(gallery) != receipt["gallery_rows"] or len(queries) != receipt["query_rows"]:
+        raise ValueError("Split/row count differs from receipt")
+    predictions = method.rank_titles(gallery, queries)
+    # Entire ranking succeeds before any output is written. The JSON carries
+    # no category or cluster labels and is bound to its source receipt hash.
+    output = {
+        "source_receipt_sha256": digest(Path(args.receipt)),
+        "predictions": [vars(item) for item in predictions],
+    }
+    atomic_bytes(Path(args.predictions), json_bytes(output))
+
+
+def label_projection(csv: Path, gallery_ids: set[str], query_ids: set[str]) -> tuple[list[method.LabelOffer], list[method.LabelOffer]]:
+    # This is the first code path that opens row-level Cluster ID/category.
+    frame = pd.read_csv(
+        csv, usecols=["Product ID", "Cluster ID", "Cluster Label", "Category ID", "Category Label"],
+        dtype=str, keep_default_na=False, encoding="utf-8-sig",
+    )
+    if len(frame) != method.SOURCE_ROWS:
+        raise ValueError("Source row count changed before label evaluation")
+    for column in frame.columns:
+        if frame[column].str.strip().eq("").any():
+            raise ValueError(f"Null/empty values in {column}; scoring blocked")
+    if frame["Product ID"].duplicated().any():
+        raise ValueError("Duplicate Product IDs in labels; scoring blocked")
+    if set(frame["Product ID"]) != gallery_ids | query_ids:
+        raise ValueError("Source IDs differ between title and label projections")
+    mapping = {
+        row[0]: method.LabelOffer(row[0], row[1], row[3])
+        for row in frame.itertuples(index=False, name=None)
+    }
+    return ([mapping[key] for key in sorted(gallery_ids)], [mapping[key] for key in sorted(query_ids)])
+
+
+def evaluate(args: argparse.Namespace) -> None:
+    receipt = read_receipt(args)
+    gallery, queries, count = title_projection(Path(args.csv))
+    if count != method.SOURCE_ROWS or len(gallery) != receipt["gallery_rows"] or len(queries) != receipt["query_rows"]:
+        raise ValueError("Split/row count differs from receipt")
+    prediction_artifact = json.loads(Path(args.predictions).read_text(encoding="utf-8"))
+    if prediction_artifact.get("source_receipt_sha256") != digest(Path(args.receipt)):
+        raise ValueError("Predictions belong to a different source/method receipt")
+    predictions = [method.Prediction(**record) for record in prediction_artifact["predictions"]]
+    gallery_labels, query_labels = label_projection(
+        Path(args.csv), {item.product_id for item in gallery}, {item.product_id for item in queries},
+    )
+    rows = method.evaluate_outcomes(gallery_labels, query_labels, predictions)
+    report = method.summarize(rows)
+    report["source_receipt_sha256"] = digest(Path(args.receipt))
+    report["predictions_sha256"] = digest(Path(args.predictions))
+    report["label_unit"] = "PriceRunner platform Cluster ID; exact variant identity unverified"
+    outcomes_content = json_bytes(rows)
+    report["outcomes_sha256"] = sha256(outcomes_content).hexdigest()
+    atomic_bytes(Path(args.outcomes), outcomes_content)
+    atomic_bytes(Path(args.report), json_bytes(report))
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    for name, action in (("receipt", source_receipt), ("rank", rank), ("evaluate", evaluate)):
+        command = sub.add_parser(name)
+        command.add_argument("--archive", required=True, help="official UCI ZIP")
+        command.add_argument("--csv", required=True, help="extracted pricerunner_aggregate.csv")
+        command.add_argument("--receipt", required=True, help="source and frozen-method manifest")
+        if name == "receipt":
+            command.add_argument("--retrieved-at-utc", required=True, help="ISO 8601 UTC timestamp")
+        else:
+            command.add_argument("--predictions", required=True)
+        if name == "evaluate":
+            command.add_argument("--report", required=True)
+            command.add_argument("--outcomes", required=True)
+        command.set_defaults(action=action)
+    args = parser.parse_args()
+    args.action(args)
+
+
+if __name__ == "__main__":
+    main()

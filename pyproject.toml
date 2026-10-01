@@ -21,6 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]
 faiss = ["faiss-cpu>=1.8"]
+pricerunner = ["numpy==2.3.5", "scipy==1.17.0", "scikit-learn==1.8.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -28,4 +29,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-
