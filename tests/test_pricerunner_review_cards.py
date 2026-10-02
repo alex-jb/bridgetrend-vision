@@ -146,6 +146,7 @@ def test_incomplete_or_missing_evidence_cannot_trigger_r3(tmp_path):
     with pytest.raises(ValueError, match="Incomplete"):
         review.locked_responses(path, lock_path, manifest, digest, "R1", sealed_at)
     _, _ = _write_locked(tmp_path, manifest, digest, "R1", labels)
+    lock = json.loads(lock_path.read_text())
     form = json.loads(path.read_text())
     form["responses"][0]["evidence"] = ""
     path.write_bytes(sampler.canonical_json(form))
