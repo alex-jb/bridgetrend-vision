@@ -1,14 +1,21 @@
 """Synthetic-only checks of the prospective PriceRunner audit selection rule."""
 
 from hashlib import sha256
+import importlib.util
 import io
 import json
 from pathlib import Path
+import sys
 import zipfile
 
 import pytest
 
-from scripts import pricerunner_variant_sampler as audit
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts/pricerunner_variant_sampler.py"
+SPEC = importlib.util.spec_from_file_location("pricerunner_variant_sampler_test", SCRIPT)
+assert SPEC is not None and SPEC.loader is not None
+audit = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = audit
+SPEC.loader.exec_module(audit)
 
 
 def run(rows):
