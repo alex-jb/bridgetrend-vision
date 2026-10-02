@@ -289,11 +289,15 @@ def validate_manual_freeze_review(
     review = frozen.get("manual_review")
     if not isinstance(review, dict):
         raise ValueError("Freeze attestation needs a separate manual review record")
+    operator = frozen.get("selection_operator_github_login")
     reviewer = review.get("reviewer_github_login")
     record = review.get("review_record_url")
+    if (not isinstance(operator, str) or
+            re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", operator) is None):
+        raise ValueError("Freeze needs a selection operator GitHub login")
     if (not isinstance(reviewer, str) or
             re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", reviewer) is None or
-            reviewer.lower() == "alex-jb"):
+            reviewer.lower() in {"alex-jb", operator.lower()}):
         raise ValueError("Manual review needs a separate GitHub reviewer login")
     if not isinstance(record, str) or re.fullmatch(
         r"https://github\.com/alex-jb/bridgetrend-vision/(?:issues|pull)/[1-9][0-9]*#issuecomment-[1-9][0-9]*",
@@ -317,6 +321,7 @@ def validate_manual_freeze_review(
     return {"freeze_anchor_url": expected_anchor,
             "freeze_recorded_at_utc": frozen_at.isoformat(),
             "manual_review_record_url": record,
+            "selection_operator_github_login": operator,
             "manual_review_reviewer_github_login": reviewer,
             "manual_review_recorded_at_utc": reviewed_at.isoformat(),
             "freeze_review_status": "operator_declared_manual_review_not_machine_verified"}

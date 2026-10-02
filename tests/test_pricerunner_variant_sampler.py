@@ -222,6 +222,7 @@ def test_manual_freeze_fields_are_declared_not_remote_proof():
     frozen = {
         "frozen_at_utc": frozen_at.isoformat(),
         "external_anchor_url": f"https://github.com/alex-jb/bridgetrend-vision/commit/{commit}",
+        "selection_operator_github_login": "curator",
         "manual_review": review,
     }
     result = audit.validate_manual_freeze_review(frozen, commit, code_sha, protocol_sha)
@@ -231,6 +232,9 @@ def test_manual_freeze_fields_are_declared_not_remote_proof():
         audit.validate_manual_freeze_review(frozen, commit, code_sha, protocol_sha)
     frozen["external_anchor_url"] = f"https://github.com/alex-jb/bridgetrend-vision/commit/{commit}"
     review["reviewer_github_login"] = "alex-jb"
+    with pytest.raises(ValueError, match="separate GitHub reviewer"):
+        audit.validate_manual_freeze_review(frozen, commit, code_sha, protocol_sha)
+    review["reviewer_github_login"] = "curator"
     with pytest.raises(ValueError, match="separate GitHub reviewer"):
         audit.validate_manual_freeze_review(frozen, commit, code_sha, protocol_sha)
     review["reviewer_github_login"] = "independent-reviewer"
