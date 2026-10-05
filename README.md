@@ -99,13 +99,13 @@ bridgetrend-vision/
 └── results/                 # Generated outputs; not committed
 ~~~
 
-## Team
+## Team and ownership
 
-- Alex Xiaoyu Ji — coordination, integration, evaluation, report and slides
-- Chixu Liu — dataset preparation, preprocessing, and baseline testing
-- Xiangdong Luo — visual encoders, retrieval index, and clustering
+- Alex Xiaoyu Ji — sole implementation owner for data preparation, modeling, experiments, evaluation, repository management, report, and slides
+- Chixu Liu — course group member
+- Xiangdong Luo — course group member
 
-All members share labeling, experiment review, documentation, and presentation work.
+Technical work and project decisions are maintained by Alex. Group-member names are retained for the COM 6005 course submission.
 
 ## Research references
 
