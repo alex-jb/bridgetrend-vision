@@ -60,6 +60,24 @@ image_id,image_path,market,category,product_id,title,source,timestamp
 
 See [data/README.md](data/README.md) for the full data contract.
 
+## External dataset import
+
+External images stay outside Git. Product1M annotations and approved catalog
+exports can be converted into the shared manifest:
+
+~~~bash
+python scripts/import_product1m.py \
+  --annotations /local/Product1M/product1m_train.txt \
+  --image-root /local/Product1M/images \
+  --category-map data/product1m_category_map.csv \
+  --output data/imports/product1m_manifest.csv
+~~~
+
+For other U.S. or Chinese catalog CSV files, use
+scripts/import_catalog_csv.py and provide the source column names. Every import
+also creates a rejected-row report so malformed or unmapped examples remain
+auditable. See [docs/data_adapters.md](docs/data_adapters.md).
+
 ## Evaluation workflow
 
 After the baseline creates retrieval_results.csv, generate separate judgment
@@ -115,4 +133,4 @@ Technical work and project decisions are maintained by Alex. Group-member names 
 
 ## Status
 
-Milestone 1 is active: prepare the first paired U.S./China image manifest and run the OpenCLIP retrieval baseline. The L0-L3 annotation and metric pipeline is ready for the first results.
+Milestone 1 is active: import the first paired U.S./China image manifest and run the OpenCLIP retrieval baseline. Product1M and generic catalog adapters, rejected-row auditing, and the L0-L3 evaluation pipeline are ready.
