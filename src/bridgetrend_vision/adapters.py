@@ -214,8 +214,8 @@ def import_catalog_csv(
             continue
 
         image_id = str(row[image_id_column]).strip()
-        image_path = Path(str(row[image_path_column]).strip())
-        if not image_id or not str(image_path):
+        raw_image_path = str(row[image_path_column]).strip()
+        if not image_id or not raw_image_path:
             rejected.append(
                 {
                     "line_number": row_number,
@@ -224,6 +224,7 @@ def import_catalog_csv(
                 }
             )
             continue
+        image_path = Path(raw_image_path)
         if root is not None and not image_path.is_absolute():
             image_path = root / image_path
 
