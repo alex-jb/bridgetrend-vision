@@ -55,3 +55,19 @@ class OpenCLIPEncoder:
             features = features / features.norm(dim=-1, keepdim=True)
         return features.cpu().numpy().astype(np.float32)
 
+    def encode_pil_images(self, images: Iterable, batch_size: int = 32) -> np.ndarray:
+        """Encode in-memory RGB variants without writing modified source images."""
+        if batch_size < 1:
+            raise ValueError("batch_size must be positive")
+        images = list(images)
+        outputs = []
+        for start in range(0, len(images), batch_size):
+            batch = self.torch.stack([
+                self.preprocess(im.convert("RGB")) for im in images[start:start+batch_size]
+            ]).to(self.device)
+            with self.torch.inference_mode():
+                features = self.model.encode_image(batch)
+                features = features / features.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+            outputs.append(features.cpu().numpy().astype(np.float32))
+        return np.concatenate(outputs) if outputs else np.empty((0, 0), dtype=np.float32)
+

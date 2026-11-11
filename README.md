@@ -133,4 +133,20 @@ Technical work and project decisions are maintained by Alex. Group-member names 
 
 ## Status
 
-Milestone 1 is active: import the first paired U.S./China image manifest and run the OpenCLIP retrieval baseline. Product1M and generic catalog adapters, rejected-row auditing, and the L0-L3 evaluation pipeline are ready.
+The November 2026 branch adds a completed **ABO image-quality pilot**: 96 real
+images, 48 listings, and 39 held-out alternate-photo queries. Clean full-gallery
+Hit@1 is 33.3% for RGB/grayscale/Sobel features, 79.5% for frozen OpenCLIP and
+71.8% for OpenCLIP with white-margin cropping. Cropping did not improve this
+sample. These are U.S.-catalog proxy results, **not cross-market accuracy**.
+
+See [the measured study and next plan](docs/abo_study.md) for the dataset,
+reproduction commands, limitations and links to the existing GSO/OpenCV work.
+
+```bash
+python scripts/collect_abo.py --output data/abo --per-category 16
+python scripts/run_abo_study.py --output results/abo-run
+```
+
+The output includes a self-contained visual `report.html`, rankings, metrics,
+embeddings and a manual-review sheet. Images and weights stay outside Git.
+The paired U.S./China source-provenance and image-rights gates remain open.
